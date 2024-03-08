@@ -2,10 +2,8 @@ package com.nico.source;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.function.Supplier;
 
@@ -15,8 +13,12 @@ public class SourceConfiguration {
     @Value("${ieso.source.url}")
     private String url;
 
+    private final SourceService sourceService;
+
     @Autowired
-    private SourceService sourceService;
+    public SourceConfiguration(SourceService sourceService) {
+        this.sourceService = sourceService;
+    }
 
     @Bean
     public Supplier<String> getXMLFromIESO() {

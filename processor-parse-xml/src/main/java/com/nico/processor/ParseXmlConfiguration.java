@@ -1,26 +1,38 @@
 package com.nico.processor;
 
+import com.nico.processor.dataClasses.DemandData;
+import com.nico.processor.dataClasses.DemandMultidaysData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.SendTo;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 @Configuration
 public class ParseXmlConfiguration {
+    private final ParseXmlService parseXmlService;
+
+    @Autowired
+    public ParseXmlConfiguration(ParseXmlService parseXmlService) {
+        this.parseXmlService = parseXmlService;
+    }
+
     @Bean
     public Function<String, List<Message<String>>> parseXml() {
         return xmlData -> {
-            List<Message<String>> demandDataList = new ArrayList<>();
-//            example of how to do batch producer (which is sending multiple messages to exchange)
-//            demandDataList.add(MessageBuilder.withPayload("a").build());
-//            demandDataList.add(MessageBuilder.withPayload("b").build());
-//            demandDataList.add(MessageBuilder.withPayload("c").build());
-            return demandDataList;
+            List<Message<String>> messages;
+            try {
+                DemandMultidaysData dmd = parseXmlService.parseXmlToObj(xmlData);
+                messages = parseXmlService.getMessageList(dmd);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+//            System.out.println(xmlData);
+            return messages;
         };
     }
 }
