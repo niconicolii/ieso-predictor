@@ -7,11 +7,9 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import jakarta.xml.bind.annotation.XmlElement;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class DemandData implements Serializable {
+public class DemandData {
     private double value;
     private LocalDateTime timestamp;
 

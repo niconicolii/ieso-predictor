@@ -6,3 +6,11 @@ spring:
       function:
         bindings:
           saveToDB-in-0: timeDemandExchange
+  data:
+    mongodb:
+      username: rootuser
+      password: rootpass
+      database: iesodemand
+      port: 27017
+      host: localhost
+      authentication-database: admin

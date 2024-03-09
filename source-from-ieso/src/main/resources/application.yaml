@@ -12,4 +12,4 @@ spring:
         bindings:
           getXMLFromIESO-out-0: xmlString
       poller:
-        fixed-delay: 30000
+        fixed-delay: 60000

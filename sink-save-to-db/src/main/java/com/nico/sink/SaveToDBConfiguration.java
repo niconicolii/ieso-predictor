@@ -11,23 +11,27 @@ import java.util.function.Consumer;
 
 @Configuration
 public class SaveToDBConfiguration {
-    private final SaveToDBService saveToDBService;
+    private final SaveToDBService service;
 
     @Autowired
-    public SaveToDBConfiguration(SaveToDBService saveToDBService) {
-        this.saveToDBService = saveToDBService;
+    public SaveToDBConfiguration(SaveToDBService service) {
+
+        this.service = service;
     }
 
     @Bean
     public Consumer<Message<String>> saveToDB() {
         return serializedMessage -> {
+            DemandData data;
             try {
-                DemandData data = saveToDBService.deserializeDemandData(serializedMessage.getPayload());
-                System.out.println("=========================================================\n" +
-                        "Timestamp: " + data.getTimestamp() + "; Value: " + data.getValue());
+                data = service.deserializeDemandData(serializedMessage.getPayload());
+//                System.out.println("=========================================================\n" +
+//                        "Timestamp: " + data.getTimestamp() + "; Value: " + data.getValue() +
+//                        "\n json: " + serializedMessage.getPayload());
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
+            service.saveToRepository(data);
         };
     }
 }
