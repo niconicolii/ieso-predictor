@@ -15,7 +15,10 @@
 
 
 ### TODO list
+- [ ] complete mongodb
+  - [ ] timestamp should be unique
 - [ ] React website UI
+  - [ ] setup React website
   - [ ] how to display demand chart
   - [ ] toggles to select different categories
 - [ ] API for getting demand values
