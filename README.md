@@ -16,7 +16,8 @@
 
 ### TODO list
 - [ ] complete mongodb
-  - [ ] timestamp should be unique
+  - [x] timestamp should be unique
+  - [ ] different DB users for different pusposes? SCS user for adding new datas in DB vs. Website accessing datas
 - [ ] React website UI
   - [ ] setup React website
   - [ ] how to display demand chart

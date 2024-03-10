@@ -20,8 +20,8 @@ import java.util.List;
 
 @Service
 public class ParseXmlService {
-    // the latest time sent to store in db
-    private LocalDateTime maxDateTime = LocalDateTime.MIN;
+//    // the latest time sent to store in db
+//    private LocalDateTime maxDateTime = LocalDateTime.MIN;
 
     private final ObjectMapper objectMapper;
 
@@ -60,13 +60,17 @@ public class ParseXmlService {
                 // start of blank data holders, don't need to continue on this XML file
                 if (datas.get(i).getValue() == 0.0) break;
                 // otherwise, add to Message list if it's not recorded yet
-                if (currDateTime.isAfter(maxDateTime)) {
-                    datas.get(i).setTimestamp(currDateTime);
-                    messages.add(
-                            demandDataToMessage(datas.get(i))
-                    );
-                    maxDateTime = currDateTime;
-                }
+//                if (currDateTime.isAfter(maxDateTime)) {
+//                    datas.get(i).setTimestamp(currDateTime);
+//                    messages.add(
+//                            demandDataToMessage(datas.get(i))
+//                    );
+//                    maxDateTime = currDateTime;
+//                }
+                datas.get(i).setTimestamp(currDateTime);
+                messages.add(
+                        demandDataToMessage(datas.get(i))
+                );
         }
         return messages;
     }
