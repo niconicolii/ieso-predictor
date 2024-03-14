@@ -17,6 +17,12 @@
 ### TODO list
 - [ ] complete mongodb
   - [x] timestamp should be unique
+  - [ ] how to minimize number of inserts AND make sure no value is missing, at the same time
+    - idea: only check data for the whole day when getting the very last data for the day
+    - [ ] processor - get all date time in sorted order in Function for once 
+    - [ ] processor - get previous maximum local date time
+      - [ ] if it's the second last datetime for the day, when looping through <Data>s, check if that day's value is in all date time 
+      - [ ] otherwise, only publish DATA if it's greater that maximum local date time
   - [ ] different DB users for different pusposes? SCS user for adding new datas in DB vs. Website accessing datas
 - [ ] React website UI
   - [ ] setup React website
