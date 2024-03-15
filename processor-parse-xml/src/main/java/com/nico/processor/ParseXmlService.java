@@ -4,15 +4,18 @@ import com.nico.processor.dataClasses.DemandData;
 import com.nico.processor.dataClasses.DemandMultidaysData;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
+import org.springframework.cglib.core.Local;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ParseXmlService {
@@ -34,16 +37,22 @@ public class ParseXmlService {
         return dmd;
     }
 
+    public Message<DemandData> buildMessage(DemandData data) {
+        return MessageBuilder.withPayload(data).build();
+    }
 
     public List<Message<DemandData>> getMessageList(DemandMultidaysData dmd) throws IOException {
         // construct result as a Message List so that DemandData are place one by one on the message queue
         List<Message<DemandData>> messages = new ArrayList<>();
-        // get necessary previous demandData from mongodb
-        List<DemandData> dataFromDB = repository.findTop287ByOrderByTimestampDesc();
-        LocalDateTime maximumDateTime = LocalDateTime.MIN;
-        if (!dataFromDB.isEmpty()) {
-            maximumDateTime = dataFromDB.get(0).getTimestamp();
+
+        LocalDateTime maximumDateTime;
+        Optional<DemandData> optional = repository.findTopByOrderByTimestampDesc();
+        if (optional.isPresent()) {
+            maximumDateTime = optional.get().getTimestamp();
+        } else {
+            maximumDateTime = LocalDateTime.MIN;
         }
+
         // dmd stores the class representing the whole XML file
         // we only need startdate and data in the 5_minute dataset
         List<DemandData> datas = dmd.getDataSet().getDatas();
@@ -52,8 +61,12 @@ public class ParseXmlService {
                 LocalDateTime currDateTime = startDateTime.plusMinutes(5L * i);
                 // start of blank data holders, don't need to continue on this XML file
                 if (datas.get(i).getValue() == 0.0) break;
-                datas.get(i).setTimestamp(currDateTime);
-                messages.add(MessageBuilder.withPayload(datas.get(i)).build());
+
+                // only insert data if greater than maximum date time
+                if (currDateTime.isAfter(maximumDateTime)) {
+                    datas.get(i).setTimestamp(currDateTime);
+                    messages.add(buildMessage(datas.get(i)));
+                }
         }
         return messages;
     }
