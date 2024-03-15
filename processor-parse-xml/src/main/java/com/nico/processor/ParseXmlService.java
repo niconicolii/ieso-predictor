@@ -37,6 +37,14 @@ public class ParseXmlService {
         return dmd;
     }
 
+    public LocalDateTime getMaxDateTime() {
+        Optional<DemandData> optional = repository.findTopByOrderByTimestampDesc();
+        if (optional.isPresent()) {
+            return optional.get().getTimestamp();
+        }
+        return LocalDateTime.MIN;
+    }
+
     public Message<DemandData> buildMessage(DemandData data) {
         return MessageBuilder.withPayload(data).build();
     }
@@ -45,24 +53,18 @@ public class ParseXmlService {
         // construct result as a Message List so that DemandData are place one by one on the message queue
         List<Message<DemandData>> messages = new ArrayList<>();
 
-        LocalDateTime maximumDateTime;
-        Optional<DemandData> optional = repository.findTopByOrderByTimestampDesc();
-        if (optional.isPresent()) {
-            maximumDateTime = optional.get().getTimestamp();
-        } else {
-            maximumDateTime = LocalDateTime.MIN;
-        }
+        LocalDateTime maximumDateTime = getMaxDateTime();
 
         // dmd stores the class representing the whole XML file
         // we only need startdate and data in the 5_minute dataset
         List<DemandData> datas = dmd.getDataSet().getDatas();
         LocalDateTime startDateTime = dmd.getStartDate();
         for (int i = 0; i < datas.size(); i++) {
-                LocalDateTime currDateTime = startDateTime.plusMinutes(5L * i);
                 // start of blank data holders, don't need to continue on this XML file
                 if (datas.get(i).getValue() == 0.0) break;
 
-                // only insert data if greater than maximum date time
+                // only insert data if calculated datetime greater than maximum datetime
+                LocalDateTime currDateTime = startDateTime.plusMinutes(5L * i);
                 if (currDateTime.isAfter(maximumDateTime)) {
                     datas.get(i).setTimestamp(currDateTime);
                     messages.add(buildMessage(datas.get(i)));
