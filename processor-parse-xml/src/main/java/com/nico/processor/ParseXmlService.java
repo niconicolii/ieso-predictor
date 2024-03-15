@@ -1,13 +1,9 @@
 package com.nico.processor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nico.processor.dataClasses.DemandData;
 import com.nico.processor.dataClasses.DemandMultidaysData;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
-import org.springframework.cglib.core.Local;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
@@ -20,15 +16,12 @@ import java.util.List;
 
 @Service
 public class ParseXmlService {
-//    // the latest time sent to store in db
-//    private LocalDateTime maxDateTime = LocalDateTime.MIN;
 
-    private final ObjectMapper objectMapper;
+    private final ParseXmlRepository repository;
 
-    public ParseXmlService() {
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-//        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+    public ParseXmlService(ParseXmlRepository repository) {
+        this.repository = repository;
     }
 
 
@@ -41,16 +34,16 @@ public class ParseXmlService {
         return dmd;
     }
 
-    public Message<String> demandDataToMessage(DemandData data) throws IOException {
-        String json = objectMapper.writeValueAsString(data);
-//        System.out.println("===========================\n" + json);
-        return MessageBuilder.withPayload(json).build();
 
-    }
-
-    public List<Message<String>> getMessageList(DemandMultidaysData dmd) throws IOException {
+    public List<Message<DemandData>> getMessageList(DemandMultidaysData dmd) throws IOException {
         // construct result as a Message List so that DemandData are place one by one on the message queue
-        List<Message<String>> messages = new ArrayList<>();
+        List<Message<DemandData>> messages = new ArrayList<>();
+        // get necessary previous demandData from mongodb
+        List<DemandData> dataFromDB = repository.findTop287ByOrderByTimestampDesc();
+        LocalDateTime maximumDateTime = LocalDateTime.MIN;
+        if (!dataFromDB.isEmpty()) {
+            maximumDateTime = dataFromDB.get(0).getTimestamp();
+        }
         // dmd stores the class representing the whole XML file
         // we only need startdate and data in the 5_minute dataset
         List<DemandData> datas = dmd.getDataSet().getDatas();
@@ -59,18 +52,8 @@ public class ParseXmlService {
                 LocalDateTime currDateTime = startDateTime.plusMinutes(5L * i);
                 // start of blank data holders, don't need to continue on this XML file
                 if (datas.get(i).getValue() == 0.0) break;
-                // otherwise, add to Message list if it's not recorded yet
-//                if (currDateTime.isAfter(maxDateTime)) {
-//                    datas.get(i).setTimestamp(currDateTime);
-//                    messages.add(
-//                            demandDataToMessage(datas.get(i))
-//                    );
-//                    maxDateTime = currDateTime;
-//                }
                 datas.get(i).setTimestamp(currDateTime);
-                messages.add(
-                        demandDataToMessage(datas.get(i))
-                );
+                messages.add(MessageBuilder.withPayload(datas.get(i)).build());
         }
         return messages;
     }

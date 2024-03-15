@@ -22,16 +22,15 @@ public class ParseXmlConfiguration {
     }
 
     @Bean
-    public Function<String, List<Message<String>>> parseXml() {
+    public Function<String, List<Message<DemandData>>> parseXml() {
         return xmlData -> {
-            List<Message<String>> messages;
+            List<Message<DemandData>> messages;
             try {
                 DemandMultidaysData dmd = parseXmlService.parseXmlToObj(xmlData);
                 messages = parseXmlService.getMessageList(dmd);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-//            System.out.println(xmlData);
             return messages;
         };
     }

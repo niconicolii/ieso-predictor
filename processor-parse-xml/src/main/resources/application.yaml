@@ -7,3 +7,11 @@ spring:
         bindings:
           parseXml-in-0: xmlString
           parseXml-out-0: timeDemandExchange
+  data:
+    mongodb:
+      username: rootuser
+      password: rootpass
+      database: iesodemand
+      port: 27017
+      host: localhost
+      authentication-database: admin
