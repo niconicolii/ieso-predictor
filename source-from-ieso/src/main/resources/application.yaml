@@ -1,10 +1,8 @@
 ieso:
   source:
     url: "https://www.ieso.ca/-/media/Files/IESO/uploaded/Chart/ontario_demand_multiday.xml"
-
 server:
   port: 0
-
 spring:
   cloud:
     stream:
