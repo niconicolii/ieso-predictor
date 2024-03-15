@@ -1,7 +1,5 @@
 package com.nico.sink;
 
-import jakarta.xml.bind.annotation.XmlElement;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;

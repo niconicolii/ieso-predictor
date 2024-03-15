@@ -4,12 +4,10 @@ import com.nico.processor.dataClasses.DemandData;
 import com.nico.processor.dataClasses.DemandMultidaysData;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
-import org.springframework.cglib.core.Local;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.io.StringReader;
 import java.time.LocalDateTime;
@@ -33,8 +31,7 @@ public class ParseXmlService {
         Unmarshaller unmarshaller = context.createUnmarshaller();
         StringReader reader = new StringReader(xmlString);
 
-        DemandMultidaysData dmd = (DemandMultidaysData) unmarshaller.unmarshal(reader);
-        return dmd;
+        return (DemandMultidaysData) unmarshaller.unmarshal(reader);
     }
 
     public LocalDateTime getMaxDateTime() {

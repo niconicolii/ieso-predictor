@@ -1,6 +1,5 @@
 package com.nico.processor.dataClasses;
 
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 
