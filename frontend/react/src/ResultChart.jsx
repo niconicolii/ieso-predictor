@@ -2,7 +2,8 @@ import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 
 export function ResultChart({ dataSet }) {
-    const timestamps = dataSet.map(data => data.time);
+    console.log(dataSet);
+    const timestamps = dataSet.map(data => data.timestamp);
     const demandValue = dataSet.map(data => data.value);
 
     const options = {
