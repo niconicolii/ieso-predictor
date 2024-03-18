@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: website-backend
+  data:
+    mongodb:
+      username: rootuser
+      password: rootpass
+      database: iesodemand
+      port: 27017
+      host: localhost
+      authentication-database: admin
+      auto-index-creation: true
