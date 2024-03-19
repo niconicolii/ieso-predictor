@@ -20,6 +20,12 @@ public class SaveToDBConfiguration {
     @Bean
     public Consumer<Message<DemandData>> saveToDB() {
         return message -> {
+            // TODO: remove later
+//            try {
+//                Thread.sleep(2000);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
             service.saveToRepository(message.getPayload());
         };
     }
