@@ -10,6 +10,31 @@ body {
   margin: 0 auto;
 }
 
+.lonely-line {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.toggles-container {
+  width: 80%;
+  margin: auto;
+  margin-bottom: 30px;
+}
+
+.graphDatePicker {
+  margin-right: 30px;
+}
+
+.toggles-inputs {
+  margin-right: 30px;
+}
+
+.toggle-error {
+  color: hsl(0, 100%, 50%);
+  font-size: medium;
+  margin-top: auto;
+}
+
 .demand-chart-container {
   width: 80%;
   height: 600px;

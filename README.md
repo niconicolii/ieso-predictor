@@ -14,7 +14,7 @@
 7. DemandData objects will be stored in `iesodemand` database's `demandData` collection
 
 
-### TODO list
+### Project TODO list
 - [ ] complete mongodb
   - [x] timestamp should be unique
   - [ ] how to minimize number of inserts AND make sure no value is missing, at the same time
@@ -23,11 +23,14 @@
   - [ ] different DB users for different purposes? SCS user for adding new datas in DB vs. Website accessing datas
 - [ ] React website UI
   - [ ] setup React website
-  - [ ] how to display demand chart
+  - [x] how to display demand chart
   - [ ] toggles to select different categories
 - [ ] API for getting demand values
-  - [ ] 5 minute
-  - [ ] hourly
+  - [ ] what are the selections/categories?
+    - 5 minute / hourly / daily
+    - start date <==> end date; default duration
+  - [x] 5 minute
+  - [x] hourly
   - [ ] daily peak for different time duration
   - [ ] monthly day peak
 - [ ] AI modeling works
@@ -39,4 +42,17 @@
   - [ ] add weather display on website
   - [ ] integrate weather data into DB into AWS S3
   - [ ] integrate weather data into sagemaker
-  - [ ] display predicted weather data on website 
+  - [ ] display predicted weather data on website
+
+### March 18, 2024 notes
+- created toggles for start/end date, and check box for different granularities
+- App.jsx is able to get checkbox and date selections from Toggle.jsx
+- next steps:
+  - API need to allow input of date and granularities
+  - react send request according to date and gran selections
+    - default request on mount
+    - send new request onChange
+    - repeat request every 5 minutes (?)
+  - more granularities including data analysis
+
+
