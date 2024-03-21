@@ -33,3 +33,6 @@ build/
 ### Node.js ###
 **/node_modules/
 
+### Key File
+mongodb-keyfile
+
