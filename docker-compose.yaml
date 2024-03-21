@@ -11,12 +11,12 @@ services:
   ieso-pred-mongodb:
     image: mongo
     container_name: ieso-pred-mongodb
-    command: ["mongod", "--replSet", "rs0", "--auth", "--bind_ip_all", "--keyFile", "/mongodb-keyfile"]
+    command: ["mongod", "--replSet", "rs0", "--auth", "--bind_ip_all", "--keyFile", "/data/mongodb-keyfile"]
     ports:
       - 27017:27017
     volumes:
       - data:/data/db
-      - ./mongodb-keyfile:/mongodb-keyfile:ro
+      - ./mongodb-keyfile:/data/mongodb-keyfile:ro
     environment:
       - MONGO_INITDB_ROOT_USERNAME=rootuser
       - MONGO_INITDB_ROOT_PASSWORD=rootpass
