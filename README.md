@@ -55,9 +55,21 @@
     - repeat request every 5 minutes (?)
   - more granularities including data analysis
 
+
 ### March 19, 2024 notes
-- [ ] ** planning to switch from springMVC to Spring WebFlux
+- [x] ** planning to switch from springMVC to Spring WebFlux
   -  it makes more sense to use reactive approach b/c website should update when new data in DB appears
+- [x] studied Spring WebFlux
+
+### March 20, 2024 notes
+- [x] learn about Reactive MongoDB
+  - [x] learnt ChangeStreamRequest - but found out not what I wanted -> event-driven but still imperative programming
+  - [x] learnt MongoDB Reative Stream Driver, create publisher through collection.watch(filteringPipeline)
+- [x] modify mongodb container setup into running as part of replica set => required by MongoDB reactive stream
+- [x] setup mongodb listener to publish database update notifications
+- [ ] push SSE to react app for continuous data sending
+
+### March 21, 2024 notes
 - [ ] API add date input
 - [ ] react functions add date in request address
   - [ ] default request
