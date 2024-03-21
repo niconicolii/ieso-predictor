@@ -55,4 +55,13 @@
     - repeat request every 5 minutes (?)
   - more granularities including data analysis
 
+### March 19, 2024 notes
+- [ ] ** planning to switch from springMVC to Spring WebFlux
+  -  it makes more sense to use reactive approach b/c website should update when new data in DB appears
+- [ ] API add date input
+- [ ] react functions add date in request address
+  - [ ] default request
+  - [ ] new request on change
+  - [ ] repeat request every 5 minutes (?)
+
 
