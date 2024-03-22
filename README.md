@@ -24,7 +24,9 @@
 - [ ] React website UI
   - [ ] setup React website
   - [x] how to display demand chart
-  - [ ] toggles to select different categories
+  - [x] toggles to select different data granularity/frequency
+  - [x] get demand data corresponding to user inquiry
+  - [x] get notified when DB updated
 - [ ] API for getting demand values
   - [ ] what are the selections/categories?
     - 5 minute / hourly / daily
@@ -67,13 +69,21 @@
   - [x] learnt MongoDB Reative Stream Driver, create publisher through collection.watch(filteringPipeline)
 - [x] modify mongodb container setup into running as part of replica set => required by MongoDB reactive stream
 - [x] setup mongodb listener to publish database update notifications
-- [ ] push SSE to react app for continuous data sending
+- [x] push SSE to react app for continuous data sending
 
 ### March 21, 2024 notes
-- [ ] API add date input
-- [ ] react functions add date in request address
-  - [ ] default request
-  - [ ] new request on change
-  - [ ] repeat request every 5 minutes (?)
+- [ ] need to cleanup webflux/website packages  => left for learning purposes
+- [x] API add date input
+- [x] react functions add date in request address
+  - [x] default request
+  - [x] new request on change
+  - [x] repeat request every 5 minutes (?) => NOPE! totally on reactive approach 
+    - backend will notify UI when DB updated
+- [x] formalized line chart display
+
+### March 22, 2024 notes
+- [ ] start dealing with weather day
+- [ ] update mongodb to S3?
+- [ ] connection to sagemaker
 
 
