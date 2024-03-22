@@ -1,9 +1,10 @@
-package com.nico.webfluxbackend;
+package com.nico.webfluxbackend.urlHandler;
 
 
-import com.mongodb.internal.connection.Server;
+import com.nico.webfluxbackend.database.DemandData;
+import com.nico.webfluxbackend.database.DemandDataService;
+import com.nico.webfluxbackend.database.PlotData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -12,7 +13,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.Optional;
 
 
 @Component
@@ -35,6 +36,26 @@ public class WebfluxBackendHandler {
 
     public Mono<ServerResponse> getFiveMinData(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(service.getFiveMinData(), DemandData.class);
+                .body(service.fiveMinData(
+                        request.queryParam("start").orElse(null),
+                        request.queryParam("end").orElse(null)
+                ), PlotData.class);
+    }
+
+
+    public Mono<ServerResponse> getHourlyData(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(service.hourlyData(
+                        request.queryParam("start").orElse(null),
+                        request.queryParam("end").orElse(null)
+                ), PlotData.class);
+    }
+
+    public Mono<ServerResponse> getDailyData(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(service.dailyData(
+                        request.queryParam("start").orElse(null),
+                        request.queryParam("end").orElse(null)
+                ), PlotData.class);
     }
 }

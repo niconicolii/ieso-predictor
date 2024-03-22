@@ -1,4 +1,4 @@
-package com.nico.webfluxbackend;
+package com.nico.webfluxbackend.database;
 
 import lombok.Getter;
 import lombok.Setter;
