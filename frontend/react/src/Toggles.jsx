@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -46,9 +46,16 @@ export function Toggles({ updateGranularity, updateStartDate, updateEndDate }) {
 
     return (
         <div>
-            <div className='lonely-line'>
-                Start Date: <DatePicker className='graphDatePicker' selected={startDate} onChange={date => handleNewStartDate(date)} />
-                End Date: <DatePicker className='graphDatePicker' selected={endDate} onChange={date => handleNewEndDate(date)} />
+            <div className='datepickers-container'>
+                <div className='datepicker-wrapper'>
+                    <label htmlFor='startDate'>Start Date: </label>
+                    <DatePicker id='startDate' selected={startDate} onChange={date => handleNewStartDate(date)} />
+                </div>
+                <div className='datepicker-wrapper'>
+                    <label htmlFor='endDate'>End Date: </label>
+                    <DatePicker id='endDate' selected={endDate} onChange={date => handleNewEndDate(date)} />
+                </div>
+                <label>Data frequench: </label>
                 <label className='toggles-inputs'>
                     <input type="checkbox" checked={selectedStats.fiveMin} onChange={e => {handleNewSelection('fiveMin')}} />
                     5 Minute
@@ -62,7 +69,7 @@ export function Toggles({ updateGranularity, updateStartDate, updateEndDate }) {
                     Daily
                 </label>
             </div>
-            <div className='toggle-error'>{dateErrorMessage}</div>
+            {dateErrorMessage.length > 0 && <div className='toggle-error'>{dateErrorMessage}</div>}
         </div>
     )
 

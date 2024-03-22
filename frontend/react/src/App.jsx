@@ -1,11 +1,13 @@
 import { ResultChart } from "./ResultChart";
 import "./styles.css"
 import React, { useEffect, useState } from 'react';
+import { format } from 'date-fns';
 import api from './api/axiosConfig';
 import { Toggles } from "./Toggles";
 
 
 export default function App() {
+    const dateFormat = 'yyyy-MM-dd';
     const [demands, setDemands] = useState([]);
     const [isLoading, setIsLoading] = useState(true);   // TODO: consider removing
     const [restCoolDown, setRestCoolDown] = useState(10);
@@ -15,8 +17,8 @@ export default function App() {
 
     const getDemands = async () => {
         try {
-            const response = await api.get("/" + dataGranularity);
-            console.log(demands);
+            const url = `/${dataGranularity}?start=${format(startDate, dateFormat)}&end=${format(endDate, dateFormat)}`
+            const response = await api.get(url);
             setDemands(() => {
                 return [...response.data];
             });
@@ -29,17 +31,13 @@ export default function App() {
 
     useEffect(() => {
         getDemands();
-//         // Set up the interval to call getDemands every 5 minutes
-// //         const interval = setInterval(getDemands, 300000);
-//         const interval = setInterval(getDemands,300000);
-//         // Clear the interval
-//         return () => clearInterval(interval);
-    }, []);
+    }, [dataGranularity, startDate, endDate]);
 
 
 
     useEffect(() => {
         setIsLoading(true);
+        getDemands();
         const eventSource = new EventSource("http://localhost:8080/updates");
         let debounceTimer;
         eventSource.onmessage = (event) => {
@@ -63,7 +61,7 @@ export default function App() {
 
 
 
-    if (isLoading || demands.length === 0) {
+    if (isLoading) {
         return <div>Loading...</div>;
     }
 
@@ -79,13 +77,15 @@ export default function App() {
         setDataGranularity(granularity);
     }
 
+    
+
     return (
         <>
             <div className="toggles-container">
                 <Toggles updateGranularity={handleGranularityChange} updateStartDate={updateStartDate} updateEndDate={updateEndDate} />
             </div>
             <div className="demand-chart-container">
-                <ResultChart dataSet={demands} />
+                <ResultChart dataSet={demands} granularity={dataGranularity} />
             </div>
         </>
     )
