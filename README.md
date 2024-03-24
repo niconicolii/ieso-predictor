@@ -82,8 +82,17 @@
 - [x] formalized line chart display
 
 ### March 22, 2024 notes
-- [ ] start dealing with weather day
-- [ ] update mongodb to S3?
+- [x] start dealing with weather data
+  - [x] choose weather api - OpenWeatherMap
+  - [x] learn about weather api
+
+### March 23, 2024 notes
+- [x] create app for getting historical hourly data  ==> need to get few (40 days for one country) every day b/c 1000 calls limit
+
+### March 24, 2024 notes
+- [ ] need to save mongodb to S3 every day
+  - [ ] start looking at AWS (S3 & Sagemaker)
 - [ ] connection to sagemaker
+- [ ] how to get IESO historical data
 
 
