@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.nico</groupId>
-	<artifactId>open-weather-map-historical-weather-getter</artifactId>
+	<artifactId>organize-historical-data</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>open-weather-map-historical-weather-getter</name>
 	<description>Get historical hourly weather data from OpenWeatherMap API</description>
@@ -29,6 +29,11 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20240303</version>
+		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

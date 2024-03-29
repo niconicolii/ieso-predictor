@@ -14,8 +14,18 @@ openweathermap:
   base-url: https://api.openweathermap.org/data/3.0/onecall
 cities:
   Toronto:
-    - 43.6534817
-    - -79.3839347
-  Markham:
-    - 43.8563707
-    - -79.3376825
+    lat: 43.6534817
+    lon: -79.3839347
+    station: 31688
+  Thunder_Bay:
+    lat: 48.406414
+    lon: -89.259796
+    station: 49389
+  Ottawa:
+    lat: 45.4208777
+    lon: -75.6901106
+    station: 30578
+  Timmins:
+    lat: 48.477473
+    lon: -81.330414
+    station: 47547

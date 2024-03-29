@@ -1,4 +1,4 @@
-package com.nico.openweathermaphistoricalweathergetter;
+package com.nico.organizeHistoricalData;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

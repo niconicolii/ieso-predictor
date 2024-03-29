@@ -1,17 +1,16 @@
-package com.nico.openweathermaphistoricalweathergetter;
+package com.nico.organizeHistoricalData.OpenWeatherMap;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Iterator;
-
+@Deprecated
 @Getter
 @Setter
 @Document(collection = "weatherCollection")
+@AllArgsConstructor
+@NoArgsConstructor
 public class WeatherData {
     @Id
     private String id;
@@ -30,7 +29,7 @@ public class WeatherData {
     public WeatherData(String city,
                        long dt,
                        JSONObject obj) {
-        this.id = city + dt;
+        this.id = city + " - " +dt;
         this.city = city;
         this.dt = dt;
         setSunriseByObj(obj);
