@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.nico</groupId>
-    <artifactId>source-from-ieso</artifactId>
+    <artifactId>predictor-source</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>source-from-ieso</name>
 
@@ -32,6 +32,15 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
