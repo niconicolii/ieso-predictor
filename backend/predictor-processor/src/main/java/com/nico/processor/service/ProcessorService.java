@@ -17,15 +17,15 @@ import java.util.List;
 @Service
 public class ProcessorService {
     private final ParseXmlService parseXmlService;
-    private final WEathergyService wEathergyService;
+    private final WeatherDataService weatherDataService;
     private final EnergyDataService energyDataService;
 
     @Autowired
     public ProcessorService(ParseXmlService parseXmlService,
-                            WEathergyService wEathergyService,
+                            WeatherDataService weatherDataService,
                             EnergyDataService energyDataService) {
         this.parseXmlService = parseXmlService;
-        this.wEathergyService = wEathergyService;
+        this.weatherDataService = weatherDataService;
         this.energyDataService = energyDataService;
     }
 
@@ -50,7 +50,7 @@ public class ProcessorService {
 
     /////////////////// WEathergy Data ///////////////////
     public List<WEathergyData> createMissingWEathergyData(WEathergyMissingMessage msgInfo) throws IOException {
-        return wEathergyService.createMissingWEathergyData(msgInfo);
+        return weatherDataService.createMissingWEathergyData(msgInfo);
     }
 
     public List<WEathergyData> fillWithDemandData(List<WEathergyData> wEathergies) throws IOException {

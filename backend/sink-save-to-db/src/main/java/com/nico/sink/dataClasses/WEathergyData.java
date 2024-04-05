@@ -1,4 +1,4 @@
-package com.nico.sink;
+package com.nico.sink.dataClasses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

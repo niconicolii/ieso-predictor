@@ -1,4 +1,4 @@
-package com.nico.source;
+package com.nico.source.dataClasses;
 
 import lombok.Data;
 

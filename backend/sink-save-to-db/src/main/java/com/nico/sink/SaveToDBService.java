@@ -1,6 +1,7 @@
 package com.nico.sink;
 
-import com.mongodb.MongoWriteException;
+import com.nico.sink.dataClasses.DemandData;
+import com.nico.sink.dataClasses.WEathergyData;
 import com.nico.sink.repository.DemandDataRepository;
 import com.nico.sink.repository.WEathergyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,6 @@ public class SaveToDBService {
                 .ifPresentOrElse(
                         existingWEathergy -> {
                             wEathergyData.setId(existingWEathergy.getId());
-//                            existingWEathergy.setDemand(wEathergyData.getDemand());
-//                            existingWEathergy.setToronto_temp(wEathergyData.getToronto_temp());
-//                            existingWEathergy.setThunder_bay_temp(wEathergyData.getThunder_bay_temp());
-//                            existingWEathergy.setOttawa_temp(wEathergyData.getOttawa_temp());
-//                            existingWEathergy.setTimmins_temp(wEathergyData.getTimmins_temp());
                             wEathergyRepository.save(wEathergyData);
                             System.out.println("Updated WEathergyData: " + wEathergyData.toString());
                         },

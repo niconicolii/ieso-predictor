@@ -1,4 +1,4 @@
-package com.nico.source.repository;
+package com.nico.source.dataClasses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,14 +42,19 @@ public class WEathergyData {
 
     @Override
     public String toString() {
-        return String.format("%d : Toronto - %f°C, ThunderBay - %f°C, Ottawa - %f°C, Timmins - %f°C, demand = %d",
+        String str = String.format(
+                "%d : Toronto - %f°C, ThunderBay - %f°C, Ottawa - %f°C, Timmins - %f°C, demand = %d",
                 this.dt,
                 this.toronto_temp,
                 this.thunder_bay_temp,
                 this.ottawa_temp,
                 this.timmins_temp,
                 this.demand
-                );
+        );
+        if (!this.id.isEmpty()) {
+            return String.format("[%s] %s", this.id, str);
+        }
+        return str;
     }
 
     public void setTempByCity(String city, double temp) {
@@ -79,10 +84,7 @@ public class WEathergyData {
     }
 
     public boolean missingValue() {
-        return this.toronto_temp <= -1000.0 ||
-                this.thunder_bay_temp <= -1000.0 ||
-                this.ottawa_temp <= -1000.0 ||
-                this.timmins_temp <= -1000.0 ||
+        return this.missingWeatherValue() ||
                 this.demand <= 0;
     }
 

@@ -46,7 +46,6 @@ public class PredictorProcessorConfiguration {
     @Bean
     public Function<WEathergyMissingMessage, List<Message<WEathergyData>>> createMissingWEathergy() {
         return missingMsg -> {
-            System.out.println("????????????????");
             System.out.println(missingMsg);
             List<WEathergyData> missingWEathergyData = new ArrayList<>();
             try {

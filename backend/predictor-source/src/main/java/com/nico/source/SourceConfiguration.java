@@ -1,7 +1,7 @@
 package com.nico.source;
 
 import com.nico.source.configuration.CityProperties;
-import jakarta.annotation.PostConstruct;
+import com.nico.source.dataClasses.WEathergyMissingMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
 import java.util.HashMap;
@@ -39,15 +38,13 @@ public class SourceConfiguration {
             Map<String, String> msg = new HashMap<>();
             msg.put("xmlString", sourceService.getDemandXmlData(iesoXmlUrl));
             msg.put("maxDateTime", sourceService.getMaxDateTimeStr());
-            System.out.println("???????????? ran getXmlFromIESO");
+            System.out.println("========== Getting XML from IESO ==========");
             return msg;
         };
     }
 
     public Supplier<WEathergyMissingMessage> updateWEathergyForYesterday() {
-        return () -> {
-            return sourceService.constructNewMissingMsgForYesterday();
-        };
+        return sourceService::constructNewMissingMsgForYesterday;
     }
 
     @EventListener(ApplicationReadyEvent.class)

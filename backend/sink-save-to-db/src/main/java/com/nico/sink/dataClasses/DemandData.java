@@ -1,4 +1,4 @@
-package com.nico.sink;
+package com.nico.sink.dataClasses;
 
 import lombok.Getter;
 import lombok.Setter;

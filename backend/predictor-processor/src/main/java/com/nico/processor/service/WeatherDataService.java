@@ -71,7 +71,7 @@ public class WeatherDataService {
         );
     }
 
-    public Map<String, List<WeatherCSVRow>> getCitiesToWeatherCsvRows(
+    private Map<String, List<WeatherCSVRow>> getCitiesToWeatherCsvRows(
             Map<String, String> cityToWeatherCsvUrl, int year, int month) throws IOException {
         Map<String, List<WeatherCSVRow>> mapCitiesToWeatherRows = new HashMap<>();
 
@@ -105,7 +105,7 @@ public class WeatherDataService {
         throw new IOException("No response from OpenWeather API for dt: " + dt +" !");
     }
 
-    public List<WEathergyData> createWEathergyByDt(WEathergyMissingMessage msg,
+    private List<WEathergyData> createWEathergyByDt(WEathergyMissingMessage msg,
                                                                 int year,
                                                                 int month,
                                                                 Map<String, List<WeatherCSVRow>> citiesToWeatherRow) throws IOException {
@@ -127,5 +127,17 @@ public class WeatherDataService {
             wEathergyDataList.add(data);
         }
         return wEathergyDataList;
+    }
+
+    public List<WEathergyData> createMissingWEathergyData(WEathergyMissingMessage msgInfo) throws IOException {
+        long dt = msgInfo.getDts().get(0);
+        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochSecond(dt), zoneId);
+        int year = ldt.getYear();
+        int month = ldt.getMonthValue();
+
+        Map<String, List<WeatherCSVRow>> citiesToWeatherCsvRows = getCitiesToWeatherCsvRows(
+                msgInfo.getCityToWeatherCsvUrl(), year, month
+        );
+        return createWEathergyByDt(msgInfo, year, month, citiesToWeatherCsvRows);
     }
 }

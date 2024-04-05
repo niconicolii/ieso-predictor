@@ -11,7 +11,6 @@ import java.time.ZoneId;
 public class HelperService {
     private ZoneId zoneId = ZoneId.of("America/New_York");
 
-
     public int dtToYear (long dt) {
         LocalDateTime ldt = Instant.ofEpochSecond(dt).atZone(zoneId).toLocalDateTime();
         return ldt.getYear();

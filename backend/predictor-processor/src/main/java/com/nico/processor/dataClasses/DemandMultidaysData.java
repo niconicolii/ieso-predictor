@@ -65,8 +65,6 @@ public class DemandMultidaysData{
         List<DemandData> datas = getDataSet().getDatas();
         for (int count = 0; count < datas.size(); count++) {
             datas.get(count).setTimestamp(getStartDate().plusMinutes(5L * count));
-//            System.out.println("Timestamp: " + datas.get(count).getTimestamp() +
-//                    "; Value: " + datas.get(count).getValue());
         }
     }
 }

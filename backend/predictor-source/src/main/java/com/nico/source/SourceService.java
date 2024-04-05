@@ -1,9 +1,10 @@
 package com.nico.source;
 
 import com.nico.source.configuration.CityProperties;
-import com.nico.source.repository.DemandData;
+import com.nico.source.dataClasses.DemandData;
+import com.nico.source.dataClasses.WEathergyMissingMessage;
 import com.nico.source.repository.DemandDataRepository;
-import com.nico.source.repository.WEathergyData;
+import com.nico.source.dataClasses.WEathergyData;
 import com.nico.source.repository.WEathergyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
@@ -78,16 +79,7 @@ public class SourceService {
         int i = 0;
         List<WEathergyData> allSorted = wEathergyRepository.findAllByOrderByDtAsc();
         while (dt < now) {
-            // case1 : repository missing data in between  => A. need to create new
-            // case2 : repository data ended at some time  => A. need to create new
-            // case3 : repository data weather incomplete  => A. need to create new
-            // case4 : repository data energy incomplete but energy csv not updated yet => B. continue
-                        // 1) current time is after 8AM => can only not have today's value
-                        // 2) current time is before 8AM => can only not have yesterday's value
-            // case5 : repository data energy incomplete  => A. need to create new
-            // case6 : repository data matched dt and completed => B. continue
-
-            // continue conditions: dt found a match && (data complete || on missing value that is allowed to miss)
+            // conditions to do nothing: dt found a match && (data complete || on missing value that is allowed to miss)
             //      => iterate i and dt
             // otherwise: need to send to processor
             //      => iterate dt, iterate i if found match
@@ -104,32 +96,6 @@ public class SourceService {
                 addNewMissingMsgToMap(dt, yearMonthToMissingMsg);
             }
             dt += 3600L;
-//            if (i < allSorted.size()) {
-//
-//                // repo data finds a match
-//                // repo data is complete
-//                // only demand value is missing but allowed since csv not updated yet
-//                if (dt == dataDt) {
-//                    if (ifYesterdayDemandAndNowIsAfterEight(dataDt) ||
-//                            data.missingWeatherValue() ||
-//                            (data.missingValue() && !ifDemandMissingAllowed(dataDt))
-//                    ){
-//                        System.out.println("because of first condition。 DT: " + dt);
-//                        System.out.println("ifYesterdayDemandAndNowIsAfterEight: " + ifYesterdayDemandAndNowIsAfterEight(dataDt));
-//                        System.out.println("(data.missingWeatherValue()): " + (data.missingWeatherValue()));
-//                        System.out.println("!ifDemandMissingAllowed(dataDt): " + !ifDemandMissingAllowed(dataDt));
-//                        addNewMissingMsgToMap(dt, yearMonthToMissingMsg);
-//                    }
-//                    i += 1;
-//                } else {
-//                    System.out.println("because of second condition");
-//                    addNewMissingMsgToMap(dt, yearMonthToMissingMsg);
-//                }
-//            } else {        // no more to go through with data from repo
-//                System.out.println("because of third condition");
-//                addNewMissingMsgToMap(dt, yearMonthToMissingMsg);
-//            }
-//            dt += 3600L;
         }
         return yearMonthToMissingMsg.values().stream().toList();
     }
@@ -145,15 +111,6 @@ public class SourceService {
             WEathergyMissingMessage newMsg = constructNewMissingMsg(ldt.getYear(), ldt.getMonthValue());
             msgMap.put(mapKey, newMsg);
         }
-    }
-
-    public <T> List<Message<T>> wrapMessage(List<T> listToWrap) {
-        List<Message<T>> messages = new ArrayList<>();
-        listToWrap.forEach( item -> {
-            messages.add(MessageBuilder.withPayload(item).build());
-        });
-        System.out.println("message wrapped, now sending " + messages);
-        return messages;
     }
 
 
@@ -183,11 +140,4 @@ public class SourceService {
         return missingMessage;
 
     }
-
-    // changed my mind -> wont add calculated demand in WEathergy DB
-//    private boolean ifYesterdayDemandAndNowIsAfterEight(long dt) {
-//        LocalDate date = Instant.ofEpochSecond(dt).atZone(zoneId).toLocalDate();
-//        LocalDate yesterday = LocalDate.now().minusDays(1);
-//        return LocalDateTime.now().getHour() > 8 && date.equals(yesterday);
-//    }
 }
