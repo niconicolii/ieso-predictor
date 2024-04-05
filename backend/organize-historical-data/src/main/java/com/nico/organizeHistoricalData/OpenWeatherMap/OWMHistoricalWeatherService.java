@@ -1,6 +1,6 @@
 //package com.nico.organizeHistoricalData.OpenWeatherMap;
 //
-//import com.nico.organizeHistoricalData.CityProperties;
+//import com.nico.organizeHistoricalData.config.CityProperties;
 //import org.json.JSONArray;
 //import org.json.JSONObject;
 //import org.springframework.beans.factory.annotation.Autowired;

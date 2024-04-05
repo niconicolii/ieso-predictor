@@ -5,7 +5,7 @@
 //import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 //@Deprecated
 //@SpringBootApplication
-//@ConfigurationPropertiesScan("com.nico.organizeHistoricalData.CityProperties")
+//@ConfigurationPropertiesScan("com.nico.organizeHistoricalData.config.CityProperties")
 //public class OWMApplication {
 //
 //	public static void main(String[] args) {

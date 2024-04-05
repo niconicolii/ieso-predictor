@@ -1,8 +1,7 @@
-package com.nico.organizeHistoricalData;
+package com.nico.organizeHistoricalData.repository;
 
 import com.opencsv.bean.CsvBindByName;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -19,8 +18,8 @@ public class WeatherCSVRow {
     private int day;
     @CsvBindByName(column = "Time (LST)")
     private String time;
-    @CsvBindByName(column = "Temp (°C)")
-    private double temp;
+    @CsvBindByName(column = "Temp (°C)", required = false)
+    private double temp = -1000.0;
 
     private long dt;
 

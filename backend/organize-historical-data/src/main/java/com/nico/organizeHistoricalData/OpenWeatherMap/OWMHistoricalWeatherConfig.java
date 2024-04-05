@@ -1,6 +1,6 @@
 //package com.nico.organizeHistoricalData.OpenWeatherMap;
 //
-//import com.nico.organizeHistoricalData.CityProperties;
+//import com.nico.organizeHistoricalData.config.CityProperties;
 //import org.springframework.boot.context.properties.EnableConfigurationProperties;
 //import org.springframework.context.annotation.Configuration;
 //@Deprecated

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@ConfigurationPropertiesScan("com.nico.organizeHistoricalData.CityProperties")
+@ConfigurationPropertiesScan("com.nico.organizeHistoricalData.config.CityProperties")
 public class OrginizeHistoricalDataApplication {
     public static void main(String[] args) {
         SpringApplication.run(OrginizeHistoricalDataApplication.class, args);
