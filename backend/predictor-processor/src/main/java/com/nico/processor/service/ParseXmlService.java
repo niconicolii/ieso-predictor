@@ -1,4 +1,4 @@
-package com.nico.processor;
+package com.nico.processor.service;
 
 import com.nico.processor.dataClasses.DemandData;
 import com.nico.processor.dataClasses.DemandMultidaysData;
@@ -13,18 +13,9 @@ import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ParseXmlService {
-
-    private final ParseXmlRepository repository;
-
-
-    public ParseXmlService(ParseXmlRepository repository) {
-        this.repository = repository;
-    }
-
 
     public DemandMultidaysData parseXmlToObj(String xmlString) throws Exception {
         JAXBContext context = JAXBContext.newInstance(DemandMultidaysData.class);
@@ -34,23 +25,16 @@ public class ParseXmlService {
         return (DemandMultidaysData) unmarshaller.unmarshal(reader);
     }
 
-    public LocalDateTime getMaxDateTime() {
-        Optional<DemandData> optional = repository.findTopByOrderByTimestampDesc();
-        if (optional.isPresent()) {
-            return optional.get().getTimestamp();
-        }
-        return LocalDateTime.MIN;
-    }
-
     public Message<DemandData> buildMessage(DemandData data) {
         return MessageBuilder.withPayload(data).build();
     }
 
-    public List<Message<DemandData>> getMessageList(DemandMultidaysData dmd) throws IOException {
+    public List<Message<DemandData>> getMessageList(
+            DemandMultidaysData dmd,
+            LocalDateTime maximumDateTime
+    ) throws IOException {
         // construct result as a Message List so that DemandData are place one by one on the message queue
         List<Message<DemandData>> messages = new ArrayList<>();
-
-        LocalDateTime maximumDateTime = getMaxDateTime();
 
         // dmd stores the class representing the whole XML file
         // we only need startdate and data in the 5_minute dataset
