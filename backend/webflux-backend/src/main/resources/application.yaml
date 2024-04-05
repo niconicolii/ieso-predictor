@@ -3,8 +3,8 @@ spring:
     name: webflux-backend
   data:
     mongodb:
-      username: rootuser
-      password: rootpass
+#      username: rootuser
+#      password: rootpass
       database: iesodemand
       port: 27017
       host: localhost

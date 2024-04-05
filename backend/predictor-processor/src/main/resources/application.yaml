@@ -3,12 +3,16 @@ server:
 spring:
   cloud:
     function:
-      definition: saveToDB;saveWEathergyToDB
+      definition: parseXml;createMissingWEathergy
     stream:
       bindings:
-        saveToDB-in-0:
+        parseXml-in-0:
+          destination: xmlString
+        parseXml-out-0:
           destination: timeDemandExchange
-        saveWEathergyToDB-in-0:
+        createMissingWEathergy-in-0:
+          destination: updateWEathergyInfo
+        createMissingWEathergy-out-0:
           destination: wEathergyDataExchange
   data:
     mongodb:
@@ -18,4 +22,5 @@ spring:
       port: 27017
       host: localhost
       authentication-database: admin
-      auto-index-creation: true
+openWeather:
+  apiKey: e427ead8cf57d148a6edf83a69d56fa9

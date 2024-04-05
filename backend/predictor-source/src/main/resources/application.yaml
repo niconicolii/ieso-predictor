@@ -1,0 +1,56 @@
+ieso:
+  source:
+    url: "https://www.ieso.ca/-/media/Files/IESO/uploaded/Chart/ontario_demand_multiday.xml"
+server:
+  port: 0
+spring:
+  cloud:
+    function:
+      definition: getXMLFromIESO;updateWEathergyForYesterday
+    stream:
+      bindings:
+        getXMLFromIESO-out-0:
+          destination: xmlString
+          producer:
+            poller:
+              fixed-delay: 60000
+        updateWEathergy-out-0:
+          destination: updateWEathergyInfo
+        updateWEathergyForYesterday-out-0:
+          destination: updateWEathergyInfo
+          producer:
+            poller:
+              cron: "0 0 8 * * ?"
+      rabbit:
+        bindings:
+          updateWEathergy-out-0:
+            producer:
+              declaredExchange: true
+              exchangeType: topic
+              exchangeDurable: true
+              exchangeAutoDelete: false
+  data:
+    mongodb:
+      #      username: rootuser
+      #      password: rootpass
+      database: iesodemand
+      port: 27017
+      host: localhost
+      authentication-database: admin
+cities:
+  Toronto:
+    lat: 43.6534817
+    lon: -79.3839347
+    station: 31688
+  Thunder_Bay:
+    lat: 48.406414
+    lon: -89.259796
+    station: 49389
+  Ottawa:
+    lat: 45.4208777
+    lon: -75.6901106
+    station: 30578
+  Timmins:
+    lat: 48.477473
+    lon: -81.330414
+    station: 50460
