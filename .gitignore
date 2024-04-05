@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 data/weather
 pics/
+data/
 
 ### STS ###
 .apt_generated
