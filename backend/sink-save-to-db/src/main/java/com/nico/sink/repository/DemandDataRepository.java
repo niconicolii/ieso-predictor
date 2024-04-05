@@ -1,5 +1,6 @@
-package com.nico.sink;
+package com.nico.sink.repository;
 
+import com.nico.sink.DemandData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.LocalDateTime;

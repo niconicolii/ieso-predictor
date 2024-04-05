@@ -20,13 +20,15 @@ public class SaveToDBConfiguration {
     @Bean
     public Consumer<Message<DemandData>> saveToDB() {
         return message -> {
-            // TODO: remove later
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
             service.saveToRepository(message.getPayload());
+        };
+    }
+
+    @Bean
+    public Consumer<Message<WEathergyData>> saveWEathergyToDB() {
+        return message -> {
+            System.out.println(message.getPayload().toString());
+            service.saveWEathergyToDB(message.getPayload());
         };
     }
 }
