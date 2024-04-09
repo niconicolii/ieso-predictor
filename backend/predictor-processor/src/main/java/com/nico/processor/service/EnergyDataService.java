@@ -68,13 +68,15 @@ public class EnergyDataService {
         long startOfYear = helperService.localYmdtToDT(year, 1, 1, 1);
         String fileName = downloadEnergyCsv(year);
         List<EnergyCSVRow> energyCSVRows = csvToRowList(fileName);
-        for (WEathergyData data : wEathergies) {
-            int index = (int) ((data.getDt() - startOfYear) / 3600L);
-            // might not be able to get row since energy data is updated every morning
-            if (index < energyCSVRows.size()) {
-                data.setDemand(energyCSVRows.get(index).getDemand());
+        int index = 0;
+        for (EnergyCSVRow row : energyCSVRows) {
+            long csvDt = row.getDt();
+            if (csvDt == wEathergies.get(index).getDt()) {
+                wEathergies.get(index).setDemand(row.getDemand());
+                index ++;
+                System.out.println(wEathergies.get(index).toString());
+                if (index >= wEathergies.size()) break;
             }
-            System.out.println(data.toString());
         }
         return wEathergies;
     }

@@ -24,7 +24,10 @@ public class EnergyCSVRow {
         if (dt <= 0.0) {
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate date = LocalDate.parse(this.date, dateTimeFormatter);
-            if (this.hour == 24) this.hour = 0;
+            if (this.hour == 24) {
+                this.hour = 0;
+                date = date.plusDays(1);
+            };
             LocalDateTime ldt = date.atTime(this.hour, 0);
 
             ZoneId zoneId = ZoneId.of("America/New_York");
