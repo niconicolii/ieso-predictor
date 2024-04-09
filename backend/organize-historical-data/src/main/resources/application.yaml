@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: open-weather-map-historical-weather-getter
+  data:
+    mongodb:
+      #      username: rootuser
+      #      password: rootpass
+      database: iesodemand
+      port: 27017
+      host: localhost
+      authentication-database: admin
+openweathermap:
+  api-key: e427ead8cf57d148a6edf83a69d56fa9
+  base-url: https://api.openweathermap.org/data/3.0/onecall
+cities:
+  Toronto:
+    lat: 43.6534817
+    lon: -79.3839347
+    station: 31688
+  Thunder_Bay:
+    lat: 48.406414
+    lon: -89.259796
+    station: 49389
+  Ottawa:
+    lat: 45.4208777
+    lon: -75.6901106
+    station: 30578
+  Timmins:
+    lat: 48.477473
+    lon: -81.330414
+    station: 47547

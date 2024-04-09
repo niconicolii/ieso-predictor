@@ -7,15 +7,11 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
-import com.nico.webfluxbackend.database.DemandData;
-import com.nico.webfluxbackend.database.DemandDataRepository;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
@@ -28,17 +24,19 @@ import static java.util.Collections.singletonList;
 
 @Service
 public class DemandDataService {
-    private final DemandDataRepository repository;
+    private final DemandDataRepository demandDataRepository;
+    private final WEathergyRepository wEathergyRepository;
     private final MongoCollection<Document> collection;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("LLL dd, yy - HH:mm");
 
 
     @Autowired
-    public DemandDataService(DemandDataRepository repository,
+    public DemandDataService(DemandDataRepository demandDataRepository,
                              MongoClient mongoClient,
                              @Value("${ieso.database}") String databaseName,
-                             @Value("${ieso.collection}") String collectionName) {
-        this.repository = repository;
+                             WEathergyRepository wEathergyRepository, @Value("${ieso.collection}") String collectionName) {
+        this.demandDataRepository = demandDataRepository;
+        this.wEathergyRepository = wEathergyRepository;
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         this.collection = database.getCollection(collectionName);
     }
@@ -52,7 +50,7 @@ public class DemandDataService {
     }
 
     public Flux<PlotData> fiveMinData(String start, String end) {
-        return repository.findFiveMinDemand(
+        return demandDataRepository.findFiveMinDemand(
                 getStartDT(start),
                 getEndDT(end)
         );
@@ -60,14 +58,14 @@ public class DemandDataService {
 
     public Flux<PlotData> hourlyData(String start, String end) {
         System.out.println(getStartDT(start) +  " ????????????????????????");
-        return repository.findHourlyDemand(
+        return demandDataRepository.findHourlyDemand(
                 getStartDT(start),
                 getEndDT(end)
         );
     }
 
     public Flux<PlotData> dailyData(String start, String end) {
-        return repository.findDailyDemand(
+        return demandDataRepository.findDailyDemand(
                 getStartDT(start),
                 getEndDT(end)
         );
@@ -85,5 +83,9 @@ public class DemandDataService {
             return LocalDate.now().atTime(23, 59, 59);
         }
         return LocalDate.parse(dateStr).atTime(23, 59, 59);
+    }
+
+    public Flux<WEathergyData> wEathergyData() {
+        return wEathergyRepository.findAll();
     }
 }

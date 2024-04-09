@@ -4,6 +4,7 @@ package com.nico.webfluxbackend.urlHandler;
 import com.nico.webfluxbackend.database.DemandData;
 import com.nico.webfluxbackend.database.DemandDataService;
 import com.nico.webfluxbackend.database.PlotData;
+import com.nico.webfluxbackend.database.WEathergyData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -57,5 +58,10 @@ public class WebfluxBackendHandler {
                         request.queryParam("start").orElse(null),
                         request.queryParam("end").orElse(null)
                 ), PlotData.class);
+    }
+
+    public Mono<ServerResponse> getWEathergyData(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(service.wEathergyData(), WEathergyData.class);
     }
 }

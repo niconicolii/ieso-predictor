@@ -1,6 +1,9 @@
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
+data/weather
+pics/
+data/
 
 ### STS ###
 .apt_generated
@@ -33,6 +36,8 @@ build/
 ### Node.js ###
 **/node_modules/
 
-### Key File
+### Key File ###
 mongodb-keyfile
 
+### AWS ###
+sagemaker_accessKeys.csv

@@ -1,5 +1,7 @@
 package com.nico.sink;
 
+import com.nico.sink.dataClasses.DemandData;
+import com.nico.sink.dataClasses.WEathergyData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,13 +22,15 @@ public class SaveToDBConfiguration {
     @Bean
     public Consumer<Message<DemandData>> saveToDB() {
         return message -> {
-            // TODO: remove later
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
             service.saveToRepository(message.getPayload());
+        };
+    }
+
+    @Bean
+    public Consumer<Message<WEathergyData>> saveWEathergyToDB() {
+        return message -> {
+            System.out.println(message.getPayload().toString());
+            service.saveWEathergyToDB(message.getPayload());
         };
     }
 }
