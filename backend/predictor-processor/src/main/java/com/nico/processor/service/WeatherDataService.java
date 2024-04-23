@@ -1,9 +1,12 @@
 package com.nico.processor.service;
 
 import com.nico.processor.csv.WeatherMappingStrategy;
+import com.nico.processor.dataClasses.ForecastData;
 import com.nico.processor.dataClasses.WEathergyData;
 import com.nico.processor.csv.WeatherCSVRow;
 import com.nico.processor.dataClasses.WEathergyMissingMessage;
+import com.nico.processor.dataClasses.openWeather.OpenWeatherForecastResponse;
+import com.nico.processor.dataClasses.openWeather.OpenWeatherForecastResponseData;
 import com.nico.processor.dataClasses.openWeather.OpenWeatherResponseAtDt;
 import com.nico.processor.dataClasses.openWeather.OpenWeatherResponseAtDtData;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -99,10 +102,19 @@ public class WeatherDataService {
                         "[Response] " + data.toString());
             }
             double temp = data.getTemp();
-            System.out.println("!!!!!!!! got temp: " + temp);
             return temp;
         }
         throw new IOException("No response from OpenWeather API for dt: " + dt +" !");
+    }
+
+    private List<OpenWeatherForecastResponseData> getForecastFromApiCall(String url) throws IOException {
+        Map<Long, Double> timestampToForecast = new HashMap<>();
+        RestTemplate restTemplate = new RestTemplate();
+        OpenWeatherForecastResponse response = restTemplate.getForObject(url, OpenWeatherForecastResponse.class);
+        if (response != null) {
+            return response.getHourly();
+        }
+        throw new IOException("No response from OpenWetherAPI for forecast, url: " + url);
     }
 
     private List<WEathergyData> createWEathergyByDt(WEathergyMissingMessage msg,
@@ -139,5 +151,28 @@ public class WeatherDataService {
                 msgInfo.getCityToWeatherCsvUrl(), year, month
         );
         return createWEathergyByDt(msgInfo, year, month, citiesToWeatherCsvRows);
+    }
+
+    public List<ForecastData> getForecasts(Map<String, String> cityUrls) throws IOException {
+        List<ForecastData> forecastDataList = new ArrayList<>();
+        Map<String, List<OpenWeatherForecastResponseData>> cityToForecasts = new HashMap<>();
+        List<String> cities = cityUrls.keySet().stream().toList();
+        for (String city : cities) {
+            cityToForecasts.put(city, getForecastFromApiCall(cityUrls.get(city) + openWeatherApiKey));
+        }
+        for (int i = 0; i < 48; i++) {
+            long timestamp = cityToForecasts.get(cities.get(0)).get(i).getDt();
+            ForecastData forecastData = new ForecastData(timestamp);
+            for (String city : cities) {
+                OpenWeatherForecastResponseData cityCurrForecast = cityToForecasts.get(city).get(i);
+                if (cityCurrForecast.getDt() != timestamp) {
+                    throw new IOException("Wrong timestamp for forecast!! Expected timestamp=" + timestamp +
+                            " Got timestamp=" + cityCurrForecast.getDt());
+                }
+                forecastData.setTempByCity(city, cityCurrForecast.getTemp());
+            }
+            forecastDataList.add(forecastData);
+        }
+        return forecastDataList;
     }
 }

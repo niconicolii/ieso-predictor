@@ -1,9 +1,6 @@
 package com.nico.processor.service;
 
-import com.nico.processor.dataClasses.DemandData;
-import com.nico.processor.dataClasses.DemandMultidaysData;
-import com.nico.processor.dataClasses.WEathergyData;
-import com.nico.processor.dataClasses.WEathergyMissingMessage;
+import com.nico.processor.dataClasses.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -13,6 +10,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProcessorService {
@@ -53,7 +51,11 @@ public class ProcessorService {
         return weatherDataService.createMissingWEathergyData(msgInfo);
     }
 
-    public List<WEathergyData> fillWithDemandData(List<WEathergyData> wEathergies) throws IOException {
-        return energyDataService.fillDemandIntoWEathergy(wEathergies);
+    public void fillWithDemandData(List<WEathergyData> wEathergies) throws IOException {
+        energyDataService.fillDemandIntoWEathergy(wEathergies);
+    }
+
+    public List<ForecastData> getForecastFromApi(Map<String, String> cityUrls) throws IOException {
+        return weatherDataService.getForecasts(cityUrls);
     }
 }

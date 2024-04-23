@@ -25,7 +25,8 @@ public class SourceService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private final String weaCsvFmt = "https://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=%d&Year=%d&Month=%d&Day=14&timeframe=1&submit=Data";
-    private final String weaApiFmt = "https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=%f&lon=%f&units=metric&dt=";
+    private final String weaTimestampApiFmt = "https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=%f&lon=%f&units=metric&dt=";
+    private final String weaForecastApiFmt = "https://api.openweathermap.org/data/3.0/onecall?lat=%f&lon=%f&exclude=current,minutely,daily,alerts&units=metric&appid=";
     private final ZoneId zoneId = ZoneId.of("America/New_York");
 
     @Autowired
@@ -52,6 +53,10 @@ public class SourceService {
         return LocalDateTime.MIN.toString();
     }
 
+    // create a WEathergyMissingMessage instance for storing all dt that are missing a corresponding WEathergyData
+    // that belongs to the same month
+    // Returned WEathergyMissingMessage will contain url for weather info (x2) for each city and url for ieso
+    // remaining step is to fill in the <dt list>
     public WEathergyMissingMessage constructNewMissingMsg(int year, int month) {
         WEathergyMissingMessage currMsg = new WEathergyMissingMessage();
         Map<String, String> cityToWeatherCsvUrl = new HashMap<>();
@@ -63,7 +68,7 @@ public class SourceService {
                     String.format(weaCsvFmt, cityInfo.get("station").intValue(), year, month));
             cityToWeatherAPIUrl.put(
                     city,
-                    String.format(weaApiFmt, cityInfo.get("lat").doubleValue(), cityInfo.get("lon").doubleValue()));
+                    String.format(weaTimestampApiFmt, cityInfo.get("lat").doubleValue(), cityInfo.get("lon").doubleValue()));
         }
         currMsg.setCityToWeatherCsvUrl(cityToWeatherCsvUrl);
         currMsg.setCityToWeatherApiUrlPrefix(cityToWeatherAPIUrl);
@@ -109,6 +114,7 @@ public class SourceService {
             msgMap.get(mapKey).getDts().add(dt);
         } else {
             WEathergyMissingMessage newMsg = constructNewMissingMsg(ldt.getYear(), ldt.getMonthValue());
+            newMsg.getDts().add(dt);
             msgMap.put(mapKey, newMsg);
         }
     }
@@ -120,24 +126,54 @@ public class SourceService {
         }
         LocalDate dataDate = Instant.ofEpochSecond(data.getDt()).atZone(zoneId).toLocalDate();
         // if before eight, allow missing demand value if dt is yesterday and after
-        if (LocalDateTime.now().getHour() <= 8) {
-            LocalDate yesterday = LocalDate.now().minusDays(1);
+        ZonedDateTime currDT = ZonedDateTime.now(zoneId);
+        if (currDT.getHour() <= 8) {
+            LocalDate yesterday = currDT.minusDays(1).toLocalDate();
             return dataDate.equals(yesterday) || dataDate.isAfter(yesterday);
         }
         // Allow missing demand value if dt is today
-        return dataDate.equals(LocalDate.now());
+        return dataDate.equals(currDT.toLocalDate());
     }
 
     public WEathergyMissingMessage constructNewMissingMsgForYesterday() {
-        LocalDateTime yesterday = LocalDate.now().minusDays(1).atTime(1, 0);
+        ZonedDateTime yesterday = ZonedDateTime.now(zoneId)
+                .minusDays(1)
+                .withHour(1)
+                .withMinute(0)
+                .withSecond(0);
         WEathergyMissingMessage missingMessage = constructNewMissingMsg(yesterday.getYear(), yesterday.getMonthValue());
-        long dt = yesterday.atZone(zoneId).toEpochSecond();
-        long dtEnd = LocalDate.now().atTime(0,0).atZone(zoneId).toEpochSecond();
-        while(dt <= dtEnd) {
+        long dt = yesterday.toEpochSecond();
+        long dtEnd = dt + 3600L * 24;
+        while(dt < dtEnd) {
             missingMessage.getDts().add(dt);
             dt += 3600L;
         }
         return missingMessage;
+    }
 
+    public long getCurrentHourEpoch() {
+        long curr = Instant.now().getEpochSecond();
+        return curr - curr % 3600L;
+    }
+
+    public WEathergyMissingMessage constructNewMissingMsgForCurrHour() {
+        ZonedDateTime curr = ZonedDateTime.now(zoneId);
+        WEathergyMissingMessage missingMessage = constructNewMissingMsg(curr.getYear(), curr.getMonthValue());
+        long currEpoch = curr.toEpochSecond();
+        missingMessage.getDts().add(currEpoch - currEpoch % 3600L);
+        return missingMessage;
+    }
+
+    public Map<String, String> getForecastUrls() {
+        Map<String, String> urls = new HashMap<>();
+        for (String city : cityNames) {
+            Map<String, Number> cityInfo = cityProperties.get(city);
+            urls.put(city,
+                    String.format(weaForecastApiFmt,
+                            cityInfo.get("lat").doubleValue(),
+                            cityInfo.get("lon").doubleValue())
+            );
+        }
+        return urls;
     }
 }

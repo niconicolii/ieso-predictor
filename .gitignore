@@ -39,5 +39,5 @@ build/
 ### Key File ###
 mongodb-keyfile
 
-### AWS ###
-sagemaker_accessKeys.csv
+### Others ###
+HelloWorld.java

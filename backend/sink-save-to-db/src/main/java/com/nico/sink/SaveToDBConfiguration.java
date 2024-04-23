@@ -1,12 +1,14 @@
 package com.nico.sink;
 
 import com.nico.sink.dataClasses.DemandData;
+import com.nico.sink.dataClasses.ForecastData;
 import com.nico.sink.dataClasses.WEathergyData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @Configuration
@@ -31,6 +33,14 @@ public class SaveToDBConfiguration {
         return message -> {
             System.out.println(message.getPayload().toString());
             service.saveWEathergyToDB(message.getPayload());
+        };
+    }
+
+    @Bean
+    public Consumer<List<ForecastData>> saveForecastToDB() {
+        return forecastList -> {
+            System.out.println("[saveForecastToDB] received: " + forecastList);
+            service.saveForecastToDB(forecastList);
         };
     }
 }

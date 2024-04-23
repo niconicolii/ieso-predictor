@@ -17,6 +17,7 @@ import reactor.core.publisher.Flux;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
@@ -26,7 +27,7 @@ import static java.util.Collections.singletonList;
 public class DemandDataService {
     private final DemandDataRepository demandDataRepository;
     private final WEathergyRepository wEathergyRepository;
-    private final MongoCollection<Document> collection;
+    private final MongoCollection<Document> demandCollection;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("LLL dd, yy - HH:mm");
 
 
@@ -34,11 +35,12 @@ public class DemandDataService {
     public DemandDataService(DemandDataRepository demandDataRepository,
                              MongoClient mongoClient,
                              @Value("${ieso.database}") String databaseName,
-                             WEathergyRepository wEathergyRepository, @Value("${ieso.collection}") String collectionName) {
+                             @Value("${ieso.demandCollection}") String demandCollectionName,
+                             WEathergyRepository wEathergyRepository ) {
         this.demandDataRepository = demandDataRepository;
         this.wEathergyRepository = wEathergyRepository;
         MongoDatabase database = mongoClient.getDatabase(databaseName);
-        this.collection = database.getCollection(collectionName);
+        this.demandCollection = database.getCollection(demandCollectionName);
     }
 
 
@@ -46,7 +48,7 @@ public class DemandDataService {
         List<Bson> pipeline = singletonList(
                 Aggregates.match(
                         Filters.in("operationType", "insert", "update", "delete")));
-        return Flux.from(collection.watch(pipeline)).map(changeStreamDocument -> "New Insertion Detected!");
+        return Flux.from(demandCollection.watch(pipeline)).map(changeStreamDocument -> "New Insertion Detected!");
     }
 
     public Flux<PlotData> fiveMinData(String start, String end) {
@@ -57,7 +59,6 @@ public class DemandDataService {
     }
 
     public Flux<PlotData> hourlyData(String start, String end) {
-        System.out.println(getStartDT(start) +  " ????????????????????????");
         return demandDataRepository.findHourlyDemand(
                 getStartDT(start),
                 getEndDT(end)
@@ -75,14 +76,22 @@ public class DemandDataService {
         if (dateStr == null) {
             return LocalDate.now().atStartOfDay();
         }
-        return LocalDate.parse(dateStr).atStartOfDay();
+        try {
+            return LocalDateTime.parse(dateStr);
+        } catch (DateTimeParseException e) {
+            return LocalDate.parse(dateStr).atStartOfDay();
+        }
     }
 
     private LocalDateTime getEndDT(String dateStr) {
         if (dateStr == null) {
             return LocalDate.now().atTime(23, 59, 59);
         }
-        return LocalDate.parse(dateStr).atTime(23, 59, 59);
+        try {
+            return LocalDateTime.parse(dateStr);
+        } catch (DateTimeParseException e) {
+            return LocalDate.parse(dateStr).atTime(23, 59, 59);
+        }
     }
 
     public Flux<WEathergyData> wEathergyData() {

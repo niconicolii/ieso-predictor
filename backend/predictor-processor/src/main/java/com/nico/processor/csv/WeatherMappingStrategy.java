@@ -18,9 +18,6 @@ public class WeatherMappingStrategy<T> extends HeaderColumnNameMappingStrategy<T
     public T populateNewBean(String[] line)
             throws CsvBeanIntrospectionException, CsvFieldAssignmentException,
             CsvChainedException {
-//        System.out.println("??????????????????? WUT?????????????????? " + Arrays.toString(line));
-//        System.out.println("Line.length: " + line.length);
-//        System.out.println("Header index:" + Arrays.toString(headerIndex.getHeaderIndex()));
 
         if (headerIndex == null || line == null) {
             throw new CsvRequiredFieldEmptyException("Missing Header");

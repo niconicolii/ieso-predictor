@@ -1,9 +1,6 @@
 package com.nico.processor;
 
-import com.nico.processor.dataClasses.DemandData;
-import com.nico.processor.dataClasses.DemandMultidaysData;
-import com.nico.processor.dataClasses.WEathergyData;
-import com.nico.processor.dataClasses.WEathergyMissingMessage;
+import com.nico.processor.dataClasses.*;
 import com.nico.processor.service.ProcessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -47,14 +44,25 @@ public class PredictorProcessorConfiguration {
     public Function<WEathergyMissingMessage, List<Message<WEathergyData>>> createMissingWEathergy() {
         return missingMsg -> {
             System.out.println(missingMsg);
-            List<WEathergyData> missingWEathergyData = new ArrayList<>();
+            List<WEathergyData> missingWEathergyData;
             try {
                 missingWEathergyData = service.createMissingWEathergyData(missingMsg);
-                missingWEathergyData = service.fillWithDemandData(missingWEathergyData);
+                service.fillWithDemandData(missingWEathergyData);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             return service.wrapMessage(missingWEathergyData);
+        };
+    }
+
+    @Bean
+    public Function<Map<String, String>, List<ForecastData>> updateCurrHourWeather() {
+        return urls -> {
+            try {
+                return service.getForecastFromApi(urls);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         };
     }
 }

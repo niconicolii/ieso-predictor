@@ -73,8 +73,8 @@ public class EnergyDataService {
             long csvDt = row.getDt();
             if (csvDt == wEathergies.get(index).getDt()) {
                 wEathergies.get(index).setDemand(row.getDemand());
-                index ++;
                 System.out.println(wEathergies.get(index).toString());
+                index ++;
                 if (index >= wEathergies.size()) break;
             }
         }

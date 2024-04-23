@@ -3,13 +3,15 @@ server:
 spring:
   cloud:
     function:
-      definition: saveToDB;saveWEathergyToDB
+      definition: saveToDB;saveWEathergyToDB;saveForecastToDB
     stream:
       bindings:
         saveToDB-in-0:
           destination: timeDemandExchange
         saveWEathergyToDB-in-0:
           destination: wEathergyDataExchange
+        saveForecastToDB-in-0:
+          destination: forecastData
   data:
     mongodb:
 #      username: rootuser

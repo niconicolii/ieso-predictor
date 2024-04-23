@@ -6,7 +6,7 @@ server:
 spring:
   cloud:
     function:
-      definition: getXMLFromIESO;updateWEathergyForYesterday
+      definition: getXMLFromIESO;updateWEathergyForYesterday;getNewWeatherInfo
     stream:
       bindings:
         getXMLFromIESO-out-0:
@@ -14,21 +14,16 @@ spring:
           producer:
             poller:
               fixed-delay: 60000
-        updateWEathergy-out-0:
-          destination: updateWEathergyInfo
         updateWEathergyForYesterday-out-0:
           destination: updateWEathergyInfo
           producer:
             poller:
               cron: "0 0 8 * * ?"
-      rabbit:
-        bindings:
-          updateWEathergy-out-0:
-            producer:
-              declaredExchange: true
-              exchangeType: topic
-              exchangeDurable: true
-              exchangeAutoDelete: false
+        getNewWeatherInfo-out-0:
+          destination: updateCurrHourWeather
+          producer:
+            poller:
+              cron: "30 14 * * * ?"
   data:
     mongodb:
       #      username: rootuser

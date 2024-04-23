@@ -11,6 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +39,10 @@ public class SourceConfiguration {
     @Bean
     public Supplier<Map<String, String>> getXMLFromIESO() {
         return () -> {
+            System.out.println("========== Getting 5-min Demand from IESO ==========");
             Map<String, String> msg = new HashMap<>();
             msg.put("xmlString", sourceService.getDemandXmlData(iesoXmlUrl));
             msg.put("maxDateTime", sourceService.getMaxDateTimeStr());
-            System.out.println("========== Getting XML from IESO ==========");
             return msg;
         };
     }
@@ -47,9 +51,12 @@ public class SourceConfiguration {
         return sourceService::constructNewMissingMsgForYesterday;
     }
 
+    // steps on startup:
+    //      1. check if WEathergyDB has all required history data
+    //      2. get latest weather forecast
     @EventListener(ApplicationReadyEvent.class)
     public void checkWEathergyCompleteOnStartup() {
-        System.out.println("========== Checking WEathergyDB ==========");
+        System.out.println("========== Startup Check on WEathergyDB ==========");
         List<WEathergyMissingMessage> missingMessages = sourceService.checkIfWEathergyDatabaseComplete();
         if (missingMessages.isEmpty()) {
             System.out.println("WEathergyDB up-to-date!");
@@ -57,5 +64,20 @@ public class SourceConfiguration {
         for (WEathergyMissingMessage msg : missingMessages) {
             streamBridge.send("updateWEathergyInfo", msg);
         }
+        System.out.println("========== Startup Retrieval of Forecast ==========");
+        streamBridge.send("updateCurrHourWeather", sourceService.getForecastUrls());
+    }
+
+    @Bean
+    public Supplier<Map<String, String>> getNewWeatherInfo() {
+        // two steps:
+        // 1) send missingMsg to create new WEathergyData for curr hour
+
+        // 2) send urls to OpenWeatherAPI to get weather forecast
+        return () -> {
+            System.out.println("========== Hourly WEathergy & Forecast Update ==========");
+            WEathergyMissingMessage msg = sourceService.constructNewMissingMsgForCurrHour();
+            return sourceService.getForecastUrls();
+        };
     }
 }

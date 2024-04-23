@@ -1,23 +1,30 @@
 package com.nico.sink;
 
 import com.nico.sink.dataClasses.DemandData;
+import com.nico.sink.dataClasses.ForecastData;
 import com.nico.sink.dataClasses.WEathergyData;
 import com.nico.sink.repository.DemandDataRepository;
+import com.nico.sink.repository.ForecastRepository;
 import com.nico.sink.repository.WEathergyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class SaveToDBService {
     private final DemandDataRepository demandDataRepository;
     private final WEathergyRepository wEathergyRepository;
+    private final ForecastRepository forecastRepository;
 
     @Autowired
-    public SaveToDBService(DemandDataRepository demandDataRepository, WEathergyRepository wEathergyRepository) {
+    public SaveToDBService(DemandDataRepository demandDataRepository,
+                           WEathergyRepository wEathergyRepository,
+                           ForecastRepository forecastRepository) {
         this.demandDataRepository = demandDataRepository;
         this.wEathergyRepository = wEathergyRepository;
+        this.forecastRepository = forecastRepository;
     }
 
     public void saveToRepository(DemandData demandData){
@@ -48,5 +55,12 @@ public class SaveToDBService {
                             System.out.println("Inserted new WEathergyData: " + wEathergyData.toString());
                         }
                 );
+    }
+
+    public void saveForecastToDB(List<ForecastData> forecastList) {
+        if (forecastList.isEmpty()) return;
+        forecastRepository.deleteAll();
+        forecastRepository.saveAll(forecastList);
+        System.out.println("Updated ForecastDB with " + forecastRepository.count() + " entities");
     }
 }
