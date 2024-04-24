@@ -154,6 +154,7 @@ public class WeatherDataService {
     }
 
     public List<ForecastData> getForecasts(Map<String, String> cityUrls) throws IOException {
+        long currHrTimestamp = ZonedDateTime.now(zoneId).withMinute(0).withSecond(0).toEpochSecond();
         List<ForecastData> forecastDataList = new ArrayList<>();
         Map<String, List<OpenWeatherForecastResponseData>> cityToForecasts = new HashMap<>();
         List<String> cities = cityUrls.keySet().stream().toList();
@@ -171,7 +172,9 @@ public class WeatherDataService {
                 }
                 forecastData.setTempByCity(city, cityCurrForecast.getTemp());
             }
-            forecastDataList.add(forecastData);
+            if (timestamp != currHrTimestamp) {
+                forecastDataList.add(forecastData);
+            }
         }
         return forecastDataList;
     }
