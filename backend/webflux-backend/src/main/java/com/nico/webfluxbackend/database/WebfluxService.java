@@ -24,21 +24,24 @@ import static java.util.Collections.singletonList;
 
 
 @Service
-public class DemandDataService {
+public class WebfluxService {
     private final DemandDataRepository demandDataRepository;
     private final WEathergyRepository wEathergyRepository;
+    private final ForecastDataRepository forecastRepository;
     private final MongoCollection<Document> demandCollection;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("LLL dd, yy - HH:mm");
 
 
     @Autowired
-    public DemandDataService(DemandDataRepository demandDataRepository,
-                             MongoClient mongoClient,
-                             @Value("${ieso.database}") String databaseName,
-                             @Value("${ieso.demandCollection}") String demandCollectionName,
-                             WEathergyRepository wEathergyRepository ) {
+    public WebfluxService(DemandDataRepository demandDataRepository,
+                          WEathergyRepository wEathergyRepository,
+                          ForecastDataRepository forecastRepository,
+                          MongoClient mongoClient,
+                          @Value("${ieso.database}") String databaseName,
+                          @Value("${ieso.demandCollection}") String demandCollectionName) {
         this.demandDataRepository = demandDataRepository;
         this.wEathergyRepository = wEathergyRepository;
+        this.forecastRepository = forecastRepository;
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         this.demandCollection = database.getCollection(demandCollectionName);
     }
@@ -96,5 +99,9 @@ public class DemandDataService {
 
     public Flux<WEathergyData> wEathergyData() {
         return wEathergyRepository.findAll();
+    }
+
+    public Flux<ForecastData> getForecastData() {
+        return forecastRepository.findAll();
     }
 }

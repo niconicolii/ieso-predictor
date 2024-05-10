@@ -22,7 +22,8 @@ public class RouterConfig {
                 .andRoute(RequestPredicates.GET("/fiveMin"), handler::getFiveMinData)
                 .andRoute(RequestPredicates.GET("/hourly"), handler::getHourlyData)
                 .andRoute(RequestPredicates.GET("/daily"), handler::getDailyData)
-                .andRoute(RequestPredicates.GET("/weathergy"), handler::getWEathergyData);
+                .andRoute(RequestPredicates.GET("/weathergy"), handler::getWEathergyData)
+                .andRoute(RequestPredicates.GET("/forecast"), handler::getWeatherForecast);
     }
 
     @Bean
