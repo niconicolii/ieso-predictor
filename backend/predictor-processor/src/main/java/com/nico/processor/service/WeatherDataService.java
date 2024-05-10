@@ -1,5 +1,6 @@
 package com.nico.processor.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nico.processor.csv.WeatherMappingStrategy;
 import com.nico.processor.dataClasses.ForecastData;
 import com.nico.processor.dataClasses.WEathergyData;
@@ -23,6 +24,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class WeatherDataService {
@@ -31,6 +34,7 @@ public class WeatherDataService {
     private final String weatherCsvFormatter;
     private final Path weatherSaveDir;
     private final ZoneId zoneId = ZoneId.of("America/New_York");
+    private static final Logger LOGGER = Logger.getLogger(WeatherDataService.class.getName());
 
 
     @Autowired
@@ -39,6 +43,14 @@ public class WeatherDataService {
         Path rootPath = Paths.get(System.getProperty("user.dir"));
         this.weatherSaveDir = rootPath.resolve("data/weather");
         Files.createDirectories(this.weatherSaveDir);       // make sure dir exist, will not throw exception  if dir already exist
+    }
+
+    private long getCurrHourTimestamp() {
+        return ZonedDateTime.now(zoneId).withMinute(0).withSecond(0).toEpochSecond();
+    }
+
+    private boolean validResponseFromOpenWeatherApi(String response) {
+        return false;
     }
 
     public List<WeatherCSVRow> cvsToRowList(String filepath) throws FileNotFoundException, IOException {
@@ -91,36 +103,59 @@ public class WeatherDataService {
         return LocalDateTime.of(year, month, day, hour, 0).atZone(zoneId).toEpochSecond();
     }
 
-    private double getTempFromApiCall(String url, long dt) throws IOException {
+    private double getTempFromApiCall(String url, long dt) {
+        System.out.println("Calling API from [getTempFromApiCall]");
         RestTemplate restTemplate = new RestTemplate();
-        OpenWeatherResponseAtDt response = restTemplate.getForObject(url, OpenWeatherResponseAtDt.class);
-        if (response != null) {
+        try {
+            OpenWeatherResponseAtDt response = restTemplate.getForObject(url, OpenWeatherResponseAtDt.class);
+            if (response == null) {
+                throw new IOException("Empty response from OpenWeatherAPI when retrieving historical data, url: " + url);
+            }
             OpenWeatherResponseAtDtData data = response.getData().get(0);
             if (data.getDt() != dt) {
                 throw new IOException("Got wrong weather info from OpenWeather API!\n" +
                         "[Expected DT] " + dt +
                         "[Response] " + data.toString());
             }
-            double temp = data.getTemp();
-            return temp;
+            return data.getTemp();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error getting temp from OpenWeather API for dt: " + dt +
+                    " ! Using dummy temperature. ErrorMsg: " + e.getMessage());
+            return -100.0;
         }
-        throw new IOException("No response from OpenWeather API for dt: " + dt +" !");
     }
 
-    private List<OpenWeatherForecastResponseData> getForecastFromApiCall(String url) throws IOException {
-        Map<Long, Double> timestampToForecast = new HashMap<>();
+    private LinkedList<OpenWeatherForecastResponseData> getForecastFromApiCall(String url) {
+        System.out.println("Calling API from [getForecastFromApiCall]");
+        LinkedList<OpenWeatherForecastResponseData> result = new LinkedList<>();
         RestTemplate restTemplate = new RestTemplate();
-        OpenWeatherForecastResponse response = restTemplate.getForObject(url, OpenWeatherForecastResponse.class);
-        if (response != null) {
-            return response.getHourly();
+        try {
+            OpenWeatherForecastResponse response = restTemplate.getForObject(url, OpenWeatherForecastResponse.class);
+//            String response = restTemplate.getForObject(url, String.class);
+            if (response == null) {
+                throw new IOException("Empty response from OpenWeatherAPI.");
+            }
+//            ObjectMapper mapper = new ObjectMapper();
+//            OpenWeatherForecastResponse responseClass = mapper.readValue(response, OpenWeatherForecastResponse.class);
+//            System.out.println(responseClass.toString());
+            result = new LinkedList<>(response.getHourly());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving forecast from API, returning dummy list. ErrorMsg: " +
+                    e.getMessage() + "; url: " + url);
+            LOGGER.log(Level.SEVERE, "If just getting as string:" + restTemplate.getForObject(url, String.class));
+            long dt = getCurrHourTimestamp();
+            for (int i = 0; i < 48; i++) {
+                result.add(new OpenWeatherForecastResponseData(dt));
+                dt += 3600L;
+            }
         }
-        throw new IOException("No response from OpenWetherAPI for forecast, url: " + url);
+        return result;
     }
 
     private List<WEathergyData> createWEathergyByDt(WEathergyMissingMessage msg,
-                                                                int year,
-                                                                int month,
-                                                                Map<String, List<WeatherCSVRow>> citiesToWeatherRow) throws IOException {
+                                                    int year,
+                                                    int month,
+                                                    Map<String, List<WeatherCSVRow>> citiesToWeatherRow) throws IOException {
         List<WEathergyData> wEathergyDataList = new ArrayList<>();
 
         long startOfMonth = localToUnix(year, month, 1, 0);
@@ -154,27 +189,53 @@ public class WeatherDataService {
     }
 
     public List<ForecastData> getForecasts(Map<String, String> cityUrls) throws IOException {
-        long currHrTimestamp = ZonedDateTime.now(zoneId).withMinute(0).withSecond(0).toEpochSecond();
+        long currHrTimestamp = getCurrHourTimestamp();
         List<ForecastData> forecastDataList = new ArrayList<>();
-        Map<String, List<OpenWeatherForecastResponseData>> cityToForecasts = new HashMap<>();
+        Map<String, LinkedList<OpenWeatherForecastResponseData>> cityToForecasts = new HashMap<>();
         List<String> cities = cityUrls.keySet().stream().toList();
+
         for (String city : cities) {
             cityToForecasts.put(city, getForecastFromApiCall(cityUrls.get(city) + openWeatherApiKey));
         }
-        for (int i = 0; i < 48; i++) {
-            long timestamp = cityToForecasts.get(cities.get(0)).get(i).getDt();
+//        for (int i = 0; i < 48; i++) {
+//            long timestamp = cityToForecasts.get(cities.get(0)).get(i).getDt();
+//            ForecastData forecastData = new ForecastData(timestamp);
+//            for (String city : cities) {
+//                OpenWeatherForecastResponseData cityCurrForecast = cityToForecasts.get(city).get(i);
+//                double temperature;
+//                if (cityCurrForecast.getDt() != timestamp) {
+//                    LOGGER.log(Level.SEVERE, "Wrong timestamp for forecast!! Expected timestamp=" + timestamp +
+//                            " Got timestamp=" + cityCurrForecast.getDt());
+//                    temperature = -100.0;
+//                } else {
+//                    temperature = cityCurrForecast.getTemp();
+//                }
+//                forecastData.setTempByCity(city, temperature);
+//            }
+//            if (timestamp != currHrTimestamp) {
+//                forecastDataList.add(forecastData);
+//            }
+//        }
+        long timestamp = getCurrHourTimestamp() + 3600L;
+        for (int i = 0; i < 47; i++) {
             ForecastData forecastData = new ForecastData(timestamp);
-            for (String city : cities) {
-                OpenWeatherForecastResponseData cityCurrForecast = cityToForecasts.get(city).get(i);
-                if (cityCurrForecast.getDt() != timestamp) {
-                    throw new IOException("Wrong timestamp for forecast!! Expected timestamp=" + timestamp +
-                            " Got timestamp=" + cityCurrForecast.getDt());
+            for (String city: cities) {
+                OpenWeatherForecastResponseData firstForecast = cityToForecasts.get(city).peek();
+                while (firstForecast != null && firstForecast.getDt() < timestamp) {
+                    cityToForecasts.get(city).removeFirst();
+                    firstForecast = cityToForecasts.get(city).peek();
                 }
-                forecastData.setTempByCity(city, cityCurrForecast.getTemp());
+                if (firstForecast != null && firstForecast.getDt() == timestamp) {
+                    forecastData.setTempByCity(city, firstForecast.getTemp());
+                    cityToForecasts.get(city).removeFirst();
+                    LOGGER.log(Level.INFO, "Added temperature to forecastData for " + city + " at " + timestamp);
+                } else {
+                    forecastData.setTempByCity(city, -100.0);
+                    LOGGER.log(Level.SEVERE, "No info for " + city + " at " + timestamp + ", using -100.0");
+                }
             }
-            if (timestamp != currHrTimestamp) {
-                forecastDataList.add(forecastData);
-            }
+            forecastDataList.add(forecastData);
+            timestamp += 3600L;
         }
         return forecastDataList;
     }
