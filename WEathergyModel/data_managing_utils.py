@@ -19,6 +19,12 @@ def request_documents(url):
     return json.loads(raw_data)
 
 
+def post_request(url, content):
+    body = content if type(content) == str else json.dumps(content)
+    response = requests.post(base_url + url, body)
+    print(f"[INFO] Sent post request to {base_url + url} : {response.text}")
+
+
 def construct_df_from_documents(all_documents):
     # columns = ['year', 'month', 'day', 'hour', 'demand', 'toronto', 'thunder_bay', 'ottawa', 'timmins']
     columns = ['month', 'hour', 'demand', 'toronto', 'thunder_bay', 'ottawa', 'timmins']

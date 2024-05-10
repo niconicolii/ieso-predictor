@@ -109,16 +109,11 @@ def main():
             X_energy_curr = torch.cat((X_energy_curr[1:], preds[i].unsqueeze(0).unsqueeze(0)))
     # print(f"hahahahahhahahahaha {preds=}")
     energy_preds = invert_to_actual_demands(preds, scalar)
-    plt.plot(energy_preds, label='Predicted Demand')
-    # plt.plot(invert_to_actual_demands(y, scalar), label='Actual Demand')
-    plt.xlabel('Hours')
-    plt.ylabel('Demand')
-    plt.legend()
-    plt.show()
 
     forecast_times = forecast_mng.get_timestamps()
     timestamp_to_energy_pred = {forecast_times[i]: int(energy_preds[i].round(decimals=0)) for i in range(len(preds))}
     print(f"{timestamp_to_energy_pred=}")
+    post_request("/save-energy-predictions", timestamp_to_energy_pred)
 
 
 if __name__ == "__main__":
