@@ -1,4 +1,4 @@
-package com.nico.webfluxbackend.database;
+package com.nico.webfluxbackend.dataClasses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

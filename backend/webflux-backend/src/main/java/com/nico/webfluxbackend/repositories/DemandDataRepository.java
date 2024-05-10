@@ -1,5 +1,7 @@
-package com.nico.webfluxbackend.database;
+package com.nico.webfluxbackend.repositories;
 
+import com.nico.webfluxbackend.dataClasses.DemandData;
+import com.nico.webfluxbackend.dataClasses.PlotData;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;

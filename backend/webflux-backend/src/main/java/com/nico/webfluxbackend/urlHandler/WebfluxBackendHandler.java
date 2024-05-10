@@ -1,7 +1,10 @@
 package com.nico.webfluxbackend.urlHandler;
 
 
-import com.nico.webfluxbackend.database.*;
+import com.nico.webfluxbackend.WebfluxService;
+import com.nico.webfluxbackend.dataClasses.ForecastData;
+import com.nico.webfluxbackend.dataClasses.PlotData;
+import com.nico.webfluxbackend.dataClasses.WEathergyData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -17,6 +20,7 @@ public class WebfluxBackendHandler {
 
     @Autowired
     private WebfluxService service;
+
 
     public Mono<ServerResponse> hello(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.TEXT_PLAIN)
@@ -63,5 +67,18 @@ public class WebfluxBackendHandler {
     public Mono<ServerResponse> getWeatherForecast(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(service.getForecastData(), ForecastData.class);
+    }
+
+    public Mono<ServerResponse> saveEnergyPred(ServerRequest request) {
+        Mono<String> jsonBody = request.bodyToMono(String.class);
+        return service.saveEnergyPredToDB(jsonBody)
+                .then(ServerResponse.ok().bodyValue("Predictions saved successfully"))
+                .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error saving predictions to MongoDB: " + e.getMessage()));
+    }
+
+    public Mono<ServerResponse> listenToPredictionUpdates(ServerRequest request) {
+        return ServerResponse.ok()
+                .contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(service.getEnergyPredictions(), String.class);
     }
 }
