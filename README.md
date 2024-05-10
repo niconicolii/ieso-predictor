@@ -14,6 +14,10 @@
 7. DemandData objects will be stored in `iesodemand` database's `demandData` collection
 
 
+### Notes & Planning on Notion
+``` https://www.notion.so/IESO-Predictor-Notes-Planning-c5ada95c7ac54a9f8a9845368f9866c3?pvs=4 ```
+
+
 ### Project TODO list
 - [ ] complete mongodb
   - [x] timestamp should be unique
