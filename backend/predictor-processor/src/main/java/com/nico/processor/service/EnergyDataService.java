@@ -2,7 +2,6 @@ package com.nico.processor.service;
 
 import com.nico.processor.csv.EnergyCSVRow;
 import com.nico.processor.dataClasses.WEathergyData;
-//import com.nico.organizeHistoricalData.repository.WEathergyRepository;
 import com.opencsv.bean.CsvToBeanBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -55,7 +55,7 @@ public class ProcessorService {
         energyDataService.fillDemandIntoWEathergy(wEathergies);
     }
 
-    public List<ForecastData> getForecastFromApi(Map<String, String> cityUrls) throws IOException {
+    public List<ForecastData> getForecastFromApi(Map<String, String> cityUrls) {
         return weatherDataService.getForecasts(cityUrls);
     }
 }

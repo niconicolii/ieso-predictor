@@ -8,10 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -57,12 +54,6 @@ public class PredictorProcessorConfiguration {
 
     @Bean
     public Function<Map<String, String>, List<ForecastData>> updateCurrHourWeather() {
-        return urls -> {
-            try {
-                return service.getForecastFromApi(urls);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        };
+        return service::getForecastFromApi;
     }
 }

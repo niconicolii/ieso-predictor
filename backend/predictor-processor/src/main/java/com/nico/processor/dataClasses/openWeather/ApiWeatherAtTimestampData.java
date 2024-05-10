@@ -1,20 +1,16 @@
 package com.nico.processor.dataClasses.openWeather;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
-public class OpenWeatherForecastResponseData {
+public class ApiWeatherAtTimestampData {
     private long dt;
+    private long sunrise;
+    private long sunset;
     private double temp;
-
-    public OpenWeatherForecastResponseData(long dt) {
-        this.dt = dt;
-        this.temp = -100.0;
-    }
+    private double uvi;
 
     @Override
     public String toString() {

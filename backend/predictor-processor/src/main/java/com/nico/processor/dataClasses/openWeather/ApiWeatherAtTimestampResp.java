@@ -1,20 +1,22 @@
 package com.nico.processor.dataClasses.openWeather;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-public class OpenWeatherResponseAtDt {
+@NoArgsConstructor
+public class ApiWeatherAtTimestampResp {
     private double lat;
     private double lon;
     private String timezone;
-    private List<OpenWeatherResponseAtDtData> data;
+    private List<ApiWeatherAtTimestampData> data;
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder(String.format("Lat: %d; Lon: %d, Timezone: %s", lat, lon, timezone));
-        for (OpenWeatherResponseAtDtData dtData : data) {
+        StringBuilder result = new StringBuilder(String.format("Lat: %f; Lon: %f, Timezone: %s", lat, lon, timezone));
+        for (ApiWeatherAtTimestampData dtData : data) {
             result.append("\n").append(dtData.toString());
         }
         return result.toString();

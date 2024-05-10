@@ -9,7 +9,7 @@ import java.time.ZoneId;
 
 @Service
 public class HelperService {
-    private ZoneId zoneId = ZoneId.of("America/New_York");
+    private final ZoneId zoneId = ZoneId.of("America/New_York");
 
     public int dtToYear (long dt) {
         LocalDateTime ldt = Instant.ofEpochSecond(dt).atZone(zoneId).toLocalDateTime();
