@@ -14,16 +14,8 @@ with open('config.json', 'r') as file:
     batch_size = config['batch_size']
 
 
-# def get_documents(host, port, replicaset, database, collection):
-#     if replicaset is None:
-#         client = MongoClient(host, port)
-#     else:
-#         client = MongoClient(host, port, replicaset=replicaset)
-#     db = client[database]
-#     return db[collection].find({})
-
 def request_documents(url):
-    raw_data = requests.get(url).text
+    raw_data = requests.get(base_url + url).text
     return json.loads(raw_data)
 
 

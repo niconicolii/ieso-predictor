@@ -21,7 +21,7 @@ def get_no_demand_start_dt():
 def get_demand_data_from_start_dt(start_dt):
     # since we are getting fiveMin data for calculating hourly demand, we will need extra data 30 mins before start_dt
     start_dt_w_extra = start_dt - timedelta(minutes=30)
-    url = base_url + '/fiveMin?start=' + start_dt_w_extra.strftime('%Y-%m-%dT%H:%M:%S')
+    url = '/fiveMin?start=' + start_dt_w_extra.strftime('%Y-%m-%dT%H:%M:%S')
     return request_documents(url)
 
 
@@ -95,7 +95,7 @@ def get_train_test_sets(energy_np, features_np, n_steps, train_percent):
 
 def get_weathergy_train_test_sets(n_steps=24, train_percent=0.9):
     # get weathergy data from request, organize into dataframe, and recover missing data
-    weathergy_df = construct_df_from_documents(request_documents(base_url + '/weathergy'))
+    weathergy_df = construct_df_from_documents(request_documents('/weathergy'))
     weathergy_df = fill_weathergy_w_est_demands(weathergy_df)
 
     # separate weathergy data into energy dataframe and feature dataframe for LSTM modeling
