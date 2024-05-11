@@ -40,7 +40,7 @@ public class WebfluxService {
     private final EnergyPredRepository energyPredRepository;
     private final MongoCollection<Document> demandCollection;
     private final EnergyPredictionSSEPublisher energySSEPublisher;
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("LLL dd, yy - HH:mm");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MMM dd, yy - HH:mm");
     private static final Logger LOGGER = Logger.getLogger(WebfluxService.class.getName());
     private final ZoneId zoneId = ZoneId.of("America/New_York");
 
@@ -82,6 +82,22 @@ public class WebfluxService {
 
     // get accumulated hourly energy demand data which is calculated using five-minute data from demandData repository
     public Flux<PlotData> hourlyData(String start, String end) {
+        LocalDateTime startDT = getStartDT(start);
+        LocalDateTime endDT = getEndDT(end);
+
+        Flux<WEathergyData> hourlyDemand = wEathergyRepository.findHourlyDemand(
+                startDT.atZone(zoneId).toEpochSecond(),
+                endDT.atZone(zoneId).toEpochSecond()
+        );
+
+        hourlyDemand.map(data -> {
+            LocalDateTime ldt = Instant.ofEpochSecond(data.getDt()).atZone(zoneId).toLocalDateTime();
+            String dtStr = ldt.format(dateTimeFormatter);
+            if (data.getDemand() <= -100.0) {
+
+            }
+        })
+
         return demandDataRepository.findHourlyDemand(
                 getStartDT(start),
                 getEndDT(end)

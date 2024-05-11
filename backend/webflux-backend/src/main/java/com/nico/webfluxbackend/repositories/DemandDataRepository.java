@@ -5,6 +5,7 @@ import com.nico.webfluxbackend.dataClasses.PlotData;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +25,14 @@ public interface DemandDataRepository extends ReactiveMongoRepository<DemandData
             "{ $sort: { _id: 1 } }"
     })
     Flux<PlotData> findHourlyDemand(LocalDateTime start, LocalDateTime end);
+
+    @Aggregation(pipeline = {
+            "{ $match: { timestamp: {$gte: ?0, $lte: ?1 } } }",
+            "{ $group: { _id: null, avgDemand: { $avg: '' }} }"
+    })
+    Mono<Integer> findDemandAverageInRange(LocalDateTime start, LocalDateTime end);
+
+
 
     @Aggregation(pipeline = {
             "{ $match: { timestamp: { $gte: ?0, $lte: ?1 } } }",

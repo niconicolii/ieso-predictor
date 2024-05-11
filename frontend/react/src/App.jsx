@@ -29,6 +29,15 @@ export default function App() {
         }
     };
 
+    const processPredictions = async (dtToPred) => {
+        try {
+            const predList = JSON.parse(dtToPred)
+        } catch(err) {
+            console.log(err)
+        }
+    }
+
+
     useEffect(() => {
         getDemands();
     }, [dataGranularity, startDate, endDate]);
@@ -38,9 +47,9 @@ export default function App() {
     useEffect(() => {
         setIsLoading(true);
         getDemands();
-        const eventSource = new EventSource("http://localhost:8080/updates");
+        const demandEventSource = new EventSource("http://localhost:8080/updates");
         let debounceTimer;
-        eventSource.onmessage = (event) => {
+        demandEventSource.onmessage = (event) => {
             // console.log(event);
             // clearTimeout if a new event enters within 1 second the previous event setted the Timer
             clearTimeout(debounceTimer);
@@ -51,12 +60,26 @@ export default function App() {
             }, 1000);
         };
         
-        eventSource.onerror = (error) => {
+        demandEventSource.onerror = (error) => {
             console.error('EventSource failed:', error);
-            eventSource.close();
+            demandEventSource.close();
         };
+
+
+        const predEventSource = new EventSource("http://localhost:8080/prediction-updates")
+        predEventSource.onmessage = (event) => {
+            console.log(event)
+            processPredictions(event)
+        }
+        predEventSource.onerror = (error) => {
+            console.error('EventSource for predictions failed:', error)
+            predEventSource.close()
+        }
         
-        return () => eventSource.close();
+        return () => {
+            demandEventSource.close()
+            predEventSource.close()
+        };
     }, [])
 
 

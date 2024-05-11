@@ -23,7 +23,7 @@ public class EnergyPredictionSSEPublisher {
 
     private Mono<String> serializeToJson(EnergyPredData data){
         try {
-            String json = new ObjectMapper().writeValueAsString(data)
+            String json = new ObjectMapper().writeValueAsString(data);
             return Mono.just(json);
         } catch (JsonProcessingException e) {
             return Mono.error(e);
