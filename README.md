@@ -8,10 +8,27 @@
      - username = `guest`; password =`guest`
    - monitor mongodb on `http://localhost:8081/`
      - username = `admin`; password = `pass`
-4. run `sink-save-to-db/src/main/java/com/nico/sink/SaveToDBApplication.java`
-5. run `processor-parse-xml/src/main/java/com/nico/processor/ParseXmlApplication.java`
-6. run `source-from-ieso/src/main/java/com/nico/source/SourceApplication.java`
-7. DemandData objects will be stored in `iesodemand` database's `demandData` collection
+4. run the SCS applications to retrieve, process, and save required data into MongoDB. Make sure to run Source application last.
+   ```
+   sink-save-to-db/src/main/java/com/nico/sink/SaveToDBApplication.java
+   processor-parse-xml/src/main/java/com/nico/processor/ParseXmlApplication.java
+   source-from-ieso/src/main/java/com/nico/source/SourceApplication.java
+   ```
+5. run the Webflux application, this will act as the backend-for-frontend application
+   ```
+   backend/webflux-backend/src/main/java/com/nico/webfluxbackend/WebFluxBackendApplication.java
+   ```
+6. run frontend application to deploy website. Access website on http://localhost:5173.
+   ```
+   cd frontend/react
+   run npm dev
+   ```
+7. run python application to train model with WEathergyData and get predictions with weather forecase
+   ```
+   cd ../../WEathergyModel
+   python model_manager.py
+   ```
+   Predictions will appear on the website at http://localhost:5173
 
 
 ### Notes & Planning on Notion
