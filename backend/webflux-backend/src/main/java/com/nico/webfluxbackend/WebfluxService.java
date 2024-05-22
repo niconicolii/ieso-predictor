@@ -92,7 +92,6 @@ public class WebfluxService {
     // get hourly energy demand data from IESO public repository,
     // data for hours that is not yet updated in IESO public repository will be calculated using five-min data
     public Flux<PlotData> hourlyData(String start, String end) {
-        System.out.println("Let's see wtf is wrong with the datetimes :) ");
         LocalDateTime startDT = getStartDT(start);
         LocalDateTime endDT = getEndDT(end);
         long endTimestamp = endDT.atZone(zoneId).toEpochSecond();
@@ -105,12 +104,8 @@ public class WebfluxService {
         return hourlyDemand.flatMap(data -> {
             LocalDateTime ldt = Instant.ofEpochSecond(data.getDt()).atZone(zoneId).toLocalDateTime();
             String dtStr = ldt.format(dateTimeFormatter);
-            System.out.println("别说这么多 就一个一个看WEathergy送来的是个什么破玩儿 ：）");
-            System.out.println(data);
-            System.out.println("dtStr: " + dtStr);
-            // since WEathergyDB will have all up-to-date documents
-            // (including document for very last hour with demand=0),
-            // calculate demand for this document
+            // since WEathergyDB will have all up-to-date documents (including document for very last hour
+            // with demand=0), calculate demand for this document
             if (data.getDemand() <= 0) {
                 // get five-min data within 60 minutes
                 LocalDateTime fromEpoch = ZonedDateTime
