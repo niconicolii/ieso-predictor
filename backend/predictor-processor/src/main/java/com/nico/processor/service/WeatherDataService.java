@@ -191,7 +191,7 @@ public class WeatherDataService {
                 if (firstForecast != null && firstForecast.getDt() == timestamp) {
                     forecastData.setTempByCity(city, firstForecast.getTemp());
                     cityToForecasts.get(city).removeFirst();
-                    LOGGER.log(Level.INFO, "Added temperature to forecastData for " + city + " at " + timestamp);
+//                    LOGGER.log(Level.INFO, "Added temperature to forecastData for " + city + " at " + timestamp);
                 } else {
                     forecastData.setTempByCity(city, -100.0);
                     LOGGER.log(Level.SEVERE, "No info for " + city + " at " + timestamp + ", using -100.0");

@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 public interface WEathergyRepository extends ReactiveMongoRepository<WEathergyData, String> {
 
     @Aggregation(pipeline = {
-        "{ $match: { dt: { $gte: ?0, $lte: ?1 } } }"
+        "{ $match: { dt: { $gte: ?0, $lte: ?1 } } }",
+        "{ $sort: { dt: 1 } }"
     })
     Flux<WEathergyData> findHourlyDemand(long start, long end);
 

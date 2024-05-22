@@ -20,7 +20,7 @@ export default function App() {
             const url = `/${dataGranularity}?start=${format(startDate, dateFormat)}&end=${format(endDate, dateFormat)}`
             const response = await api.get(url);
             setDemands(() => {
-                return [...response.data];
+                return [...response.data].sort((a, b) => a.id - b.id);
             });
         } catch(err) {
             console.log(err);

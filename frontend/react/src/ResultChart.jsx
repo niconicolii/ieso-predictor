@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 export function ResultChart({ dataSet, granularity }) {
   console.log(dataSet);
-  const timestamps = dataSet.map(data => data.id);
+  const dtStrs = dataSet.map(data => data.dtStr);
   const demandValue = dataSet.map(data => data.demandValue);
 
   let prevDate = null;
@@ -63,7 +63,7 @@ export function ResultChart({ dataSet, granularity }) {
   }
 
   const data = {
-      labels: timestamps, // time
+      labels: dtStrs, // time
       datasets: [
         {
           label: 'Demand',

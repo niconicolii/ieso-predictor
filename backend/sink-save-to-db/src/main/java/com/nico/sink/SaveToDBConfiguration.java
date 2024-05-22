@@ -31,7 +31,6 @@ public class SaveToDBConfiguration {
     @Bean
     public Consumer<Message<WEathergyData>> saveWEathergyToDB() {
         return message -> {
-            System.out.println(message.getPayload().toString());
             service.saveWEathergyToDB(message.getPayload());
         };
     }

@@ -31,9 +31,9 @@ public class ProcessorService {
     public <T> List<Message<T>> wrapMessage(List<T> listToWrap) {
         List<Message<T>> messages = new ArrayList<>();
         listToWrap.forEach( item -> {
-            System.out.println("Wrapping item to Message: " + item.toString());
             messages.add(MessageBuilder.withPayload(item).build());
         });
+        System.out.println("Wrapped " + messages.size() + " items into Messages");
         return messages;
     }
 
