@@ -59,9 +59,18 @@ public class WebfluxBackendHandler {
                 ), PlotData.class);
     }
 
-    public Mono<ServerResponse> getWEathergyData(ServerRequest request) {
+    public Mono<ServerResponse> getAllWEathergyData(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(service.wEathergyData(), WEathergyData.class);
+                .body(service.allWEathergyData(), WEathergyData.class);
+    }
+
+
+    public Mono<ServerResponse> getConditionalWEathergy(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(service.conditionalWEathergy(
+                        request.queryParam("after").orElse("0"),
+                        request.queryParam("before").orElse("99999999999")
+                ), WEathergyData.class);
     }
 
     public Mono<ServerResponse> getWeatherForecast(ServerRequest request) {
@@ -81,4 +90,5 @@ public class WebfluxBackendHandler {
                 .contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(service.getEnergyPredictions(), String.class);
     }
+
 }

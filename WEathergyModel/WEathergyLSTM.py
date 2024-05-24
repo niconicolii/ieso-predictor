@@ -22,3 +22,7 @@ class WEathergyLSTM(nn.Module):
         linear_out = self.combined_linear(combined)
         out = self.fc(linear_out)
         return out
+
+
+
+

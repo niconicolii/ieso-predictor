@@ -51,10 +51,13 @@ def construct_df_from_documents(all_documents):
 
 ############################ manage scaling the datasets ############################
 
-def get_scaled_np(df):
+def get_scaled_np(df, scalar=None):
     lstm_np = df.to_numpy()
-    scalar = MinMaxScaler(feature_range=(-1, 1))
-    return scalar.fit_transform(lstm_np), scalar
+    if scalar is None:
+        scalar = MinMaxScaler(feature_range=(-1, 1))
+        return scalar.fit_transform(lstm_np), scalar
+    print(f"????????????????????? {df}")
+    return scalar.transform(lstm_np)
 
 
 def invert_to_actual_demands(data, scalar, n_steps=24):

@@ -14,7 +14,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -96,7 +95,7 @@ public class WebfluxService {
         LocalDateTime endDT = getEndDT(end);
         long endTimestamp = endDT.atZone(zoneId).toEpochSecond();
 
-        Flux<WEathergyData> hourlyDemand = wEathergyRepository.findHourlyDemand(
+        Flux<WEathergyData> hourlyDemand = wEathergyRepository.findWeathergyDemandInclusive(
                 startDT.atZone(zoneId).toEpochSecond(),
                 endTimestamp
         );
@@ -155,8 +154,13 @@ public class WebfluxService {
     }
 
     // get all WEathergyData from MongoDB
-    public Flux<WEathergyData> wEathergyData() {
+    public Flux<WEathergyData> allWEathergyData() {
         return wEathergyRepository.findAll();
+    }
+
+
+    public Flux<WEathergyData> conditionalWEathergy(String after, String before) {
+        return wEathergyRepository.findWeathergyDemandExclusive(Long.parseLong(after), Long.parseLong(before));
     }
 
     // get all forecast data from MongoDB
@@ -179,7 +183,7 @@ public class WebfluxService {
     private Mono<Void> processPredictions(Map<String, Integer> timestampToPreds) {
         return energyPredRepository.deleteAll()
             .doOnSuccess(blah ->
-                LOGGER.log(Level.INFO, "[INFO] Delete all energy demand predictions for new prediction set.")
+                LOGGER.log(Level.INFO, "[INFO] Deleted all energy demand predictions for new prediction set.")
             ).thenMany(
                 Flux.fromIterable(timestampToPreds.entrySet())
                     .flatMap(entry -> {
@@ -200,4 +204,5 @@ public class WebfluxService {
     public Flux<String> getEnergyPredictions() {
         return energySSEPublisher.getStream();
     }
+
 }

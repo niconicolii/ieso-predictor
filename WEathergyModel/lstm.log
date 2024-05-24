@@ -1,0 +1,7 @@
+INFO:__main__:Getting WEathergy Data from Database
+INFO:__main__:Training model with finalized data
+INFO:__main__:No existing model. Initializing new LSTM model
+INFO:__main__:Evaluating hyperparameters
+INFO:__main__:Evaluating loss for params={'feature_input_size': 6, 'learning_rate': 0.001, 'linear_hidden_size': 4, 'lstm_hidden_size': 4, 'lstm_input_size': 1, 'lstm_layers': 1, 'num_epochs': 5}
+INFO:__main__:      average loss = 0.002444858429953456
+INFO:__main__:Evaluating loss for params={'feature_input_size': 6, 'learning_rate': 0.001, 'linear_hidden_size': 4, 'lstm_hidden_size': 4, 'lstm_input_size': 1, 'lstm_layers': 1, 'num_epochs': 10}
