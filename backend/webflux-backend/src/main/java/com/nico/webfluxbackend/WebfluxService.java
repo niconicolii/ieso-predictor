@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -82,10 +83,37 @@ public class WebfluxService {
 
     // get five-minute energy demand data from demandData repository
     public Flux<PlotData> fiveMinData(String start, String end) {
-        return demandDataRepository.findFiveMinDemandToPlotData(
-                getStartDT(start),
-                getEndDT(end)
-        );
+        LocalDateTime startLdt = getStartDT(start);
+        LocalDateTime endLdt = getEndDT(end);
+        long startEpoch = startLdt.atZone(zoneId).toEpochSecond();
+        long endEpoch = endLdt.atZone(zoneId).toEpochSecond();
+        return demandDataRepository.findFiveMinDemandToPlotData(startLdt, endLdt)
+            .collectMap(PlotData::getId)
+            .flatMapMany(fiveMinDemandDataMap -> wEathergyRepository.findWeathergyDemandInclusive(startEpoch, endEpoch)
+                .collectMap(WEathergyData::getDt)
+                .flatMapMany(wEathergyDataMap -> {
+                    Map<Long, PlotData> fiveMin = new HashMap<>(fiveMinDemandDataMap);
+                    Map<Long, WEathergyData> weathergy = new HashMap<>(wEathergyDataMap);
+                    return Flux.create(emitter -> {
+                        long curr = startEpoch;
+                        while (curr <= endEpoch) {
+                            PlotData plotData = fiveMin.get(curr);
+                            if (plotData != null) {
+                                emitter.next(plotData);
+                            } else {
+                                String dtStr = ZonedDateTime.ofInstant(Instant.ofEpochSecond(curr), zoneId).format(dateTimeFormatter);
+                                if (curr % 3600 == 0 && weathergy.containsKey(curr)) {
+                                    emitter.next(new PlotData(curr, dtStr, weathergy.get(curr).getDemand()));
+                                } else {
+                                    emitter.next(new PlotData(curr, dtStr, null));
+                                }
+                            }
+                            curr += 300;
+                        }
+                        emitter.complete();
+                    });
+                })
+            );
     }
 
     // get hourly energy demand data from IESO public repository,
